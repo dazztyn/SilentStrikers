@@ -1,8 +1,8 @@
 [gd_scene load_steps=10 format=3 uid="uid://d1ouhuslclwme"]
 
-[ext_resource type="Script" uid="uid://bl7xsghjndym2" path="res://Codigos/Guardia.gd" id="1_gxl0b"]
+[ext_resource type="Script" uid="uid://bl7xsghjndym2" path="res://Codigos/Guardia-patrulla.gd" id="1_gxl0b"]
 [ext_resource type="Texture2D" uid="uid://cud6v0l3syc43" path="res://Sprites/Guardia comun.png" id="2_1uryg"]
-[ext_resource type="Script" uid="uid://b7b4ernwbles7" path="res://Codigos/animation_guardia.gd" id="3_g5ju6"]
+[ext_resource type="Script" uid="uid://b7b4ernwbles7" path="res://Escenas/animation_guardia.gd" id="3_g5ju6"]
 
 [sub_resource type="Animation" id="Animation_pjdr2"]
 resource_name = "Abajo"
@@ -73,7 +73,7 @@ _data = {
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0277c"]
-size = Vector2(109, 313)
+size = Vector2(52.5, 49.4688)
 
 [node name="CharacterBody2D" type="CharacterBody2D"]
 collision_layer = 2
@@ -96,7 +96,7 @@ libraries = {
 script = ExtResource("3_g5ju6")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(-6.5, 19.5)
+position = Vector2(0, 13.7344)
 shape = SubResource("RectangleShape2D_0277c")
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]

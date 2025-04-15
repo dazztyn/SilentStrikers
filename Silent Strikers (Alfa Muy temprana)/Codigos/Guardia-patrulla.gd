@@ -1,10 +1,23 @@
-# Guardia.gd
+# Guardia-patrulla.gd
 extends CharacterBody2D
+
+#explicación: arriba del physics process, puse una variable de tiempo
+#(está en segundos delta), patrulla tiene 5(s) de cooldown,
+#y sólo se patrulla si no hay una patrulla vigente ni está dando vueltas en la habitación,
+#patrullar() llama a dar vueltas() después de llegar a cada habitación
+#(las cuales están guardadas en la lista paths) y darvueltas() sólo aplica un
+#movimiento predeterminado para el guardia después de llegar a la habitación.
+#se agregó también una variable de estado del guardia (podrían cambiarse para que tenga mayor sentido)
+#se separaron las paredes del suelo de los TileMaplayer, 1 se puso afuera, y otro como hijo de un NavigationRegion2D
 
 ## --- Variables de Movimiento y Navegación ---
 @export var speed: float = 200.0
 @export var acceleration: float = 7.0 # Renombrada de 'acel' para claridad
+@export var estado: String = "normal"
 @export var navigation_target: Marker2D = null # El objetivo para el NavigationAgent2D
+#posiciones de Patrulla
+@onready var paths = [get_parent().get_node("Pos1"),get_parent().get_node("Pos2"),
+get_parent().get_node("Pos3"),get_parent().get_node("Pos4")]
 
 @onready var navigation_agent: NavigationAgent2D = $NavigationAgent2D
 
@@ -22,6 +35,7 @@ var last_known_player_position: Vector2 = Vector2.ZERO
 ## --- Variables para Dibujo del Cono ---
 @export var draw_vision_cone: bool = true
 @export var vision_cone_color: Color = Color(1, 1, 0, 0.3) # Amarillo semi-transparente
+var tiempo = 0
 
 #=============================================================================
 # FUNCIONES INTEGRADAS DE GODOT
@@ -51,17 +65,21 @@ func _ready():
 	# if navigation_target:
 	#	 navigation_agent.target_position = navigation_target.global_position
 
-
+var patrulla = true
+var dandolavuelta = false
 func _physics_process(delta):
+	tiempo += 1/(3600*delta)
 	if not is_instance_valid(navigation_agent):
 		printerr("Guardia: NavigationAgent2D no es válido.")
 		return
-
+	
 	# --- 1. Lógica de Navegación y Movimiento ---
 	var move_direction = Vector2.ZERO
 	if navigation_target:
-		navigation_agent.target_position = navigation_target.global_position
-
+		if estado == "normal":
+			navigation_agent.target_position = navigation_target.global_position
+		elif estado == "Patrulla":
+			navigation_agent.target_position = last_known_player_position
 		if not navigation_agent.is_navigation_finished():
 			var next_path_pos = navigation_agent.get_next_path_position()
 			# Calcula la dirección hacia el siguiente punto del camino
@@ -71,6 +89,11 @@ func _physics_process(delta):
 		else:
 			# Llegó al destino, desacelera
 			velocity = velocity.lerp(Vector2.ZERO, acceleration * delta)
+			if tiempo >= 5 and navigation_agent.is_navigation_finished() and patrulla and not dandolavuelta:
+				print("esperando a Patrullar()... " + str(round(tiempo)) + "(s) Desde la última patrulla)")
+				dandolavuelta = true
+				tiempo = 0
+				patrullar(paths)
 	else:
 		# No hay objetivo, desacelera
 		velocity = velocity.lerp(Vector2.ZERO, acceleration * delta)
@@ -152,21 +175,40 @@ func check_vision(guard_forward_direction: Vector2):
 	# Actualizar estado de detección y llamar a las funciones correspondientes SÓLO si cambia
 	player_detected = currently_detected
 	if player_detected and not was_detected:
+		estado = "Alerta máxima"
+		was_detected = true
 		_on_player_detected()
 	elif not player_detected and was_detected:
+		estado = "Patrulla"
 		_on_player_lost()
 
 ## Llamada cuando el jugador es detectado por primera vez.
 func _on_player_detected():
 	print("¡Jugador DETECTADO en ", Time.get_ticks_msec(), "!")
+	
+	navigation_agent.target_position = player.global_position
+	
+	
 	# --- PON AQUÍ TU LÓGICA DE DETECCIÓN ---
 	# Ejemplo: Cambiar a estado de persecución, alertar a otros, etc.
 	# Ejemplo: Podrías hacer que el objetivo de navegación sea ahora el jugador
 	# self.navigation_target = player # ¡CUIDADO! Esto haría que deje de seguir la ruta original.
 
+
 ## Llamada cuando se pierde la visión del jugador.
 func _on_player_lost():
 	print("Jugador PERDIDO.")
+	
+	var move_direction = Vector2.ZERO
+	if navigation_target:
+		navigation_agent.target_position = last_known_player_position
+	if not navigation_agent.is_navigation_finished():
+		var next_path_pos = navigation_agent.get_next_path_position()
+		move_direction = (next_path_pos - global_position).normalized()
+	await get_tree().create_timer(5).timeout
+	if navigation_agent.is_navigation_finished():
+		patrulla = true
+		await patrullar(paths)
 	# --- PON AQUÍ TU LÓGICA AL PERDERLO ---
 	# Ejemplo: Volver a patrullar, ir a la última posición conocida, etc.
 	# Ejemplo: Podrías querer que vaya a 'last_known_player_position'
@@ -174,6 +216,36 @@ func _on_player_lost():
 	#     navigation_agent.target_position = last_known_player_position # Ir a investigar
 	#     # Necesitarías lógica adicional para volver a patrullar después
 
+#si está en medio de una patrulla
+func patrullar(paths: Array):
+	estado = "normal"
+	if patrulla:
+		patrulla = false
+		for i in range(0, paths.size()):
+			navigation_target = paths[i]
+			await get_tree().create_timer(1).timeout
+			while not navigation_agent.is_navigation_finished():
+				await get_tree().create_timer(2).timeout
+				print("Patrullando... (" + str(navigation_agent.is_navigation_finished()) + ")")
+			await darVueltas(i)
+		await get_tree().create_timer(1).timeout
+		patrulla = true
+
+func darVueltas(i):
+	print("Dando la vuelta...")
+	await get_tree().create_timer(2).timeout
+	speed = 100
+	paths[i].position -= Vector2(150,0)
+	await get_tree().create_timer(3).timeout
+	if vision_raycast.is_colliding():
+		if vision_raycast.collision_mask == wall_collision_mask:
+			paths[i].position = position
+	paths[i].position += Vector2(300,0)
+	await get_tree().create_timer(5).timeout
+	paths[i].position -= Vector2(150,0)
+	await get_tree().create_timer(3).timeout
+	speed = 200
+	dandolavuelta = false
 
 #=============================================================================
 # FUNCIÓN DE DIBUJO
