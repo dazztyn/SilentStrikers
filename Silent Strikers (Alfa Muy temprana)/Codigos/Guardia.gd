@@ -29,7 +29,7 @@ var player_detected = false
 var last_known_player_position = Vector2.ZERO
 
 ## --- Tiempo de búsqueda ---
-var search_duration = 10.0 # Segundos que espera buscando
+var search_duration = 3.0 # Segundos que espera buscando
 var search_timer = 0.0
 
 ## --- Tiempo de persecución ---
