@@ -9,6 +9,7 @@ var player: CharacterBody2D
 var rotation2 = rotation #rotación usada para la vision, No es la rotación del guardia
 
 @onready var navigation_agent: NavigationAgent2D = $NavigationAgent2D
+@onready var vision_polygon := $Polygon2D
 
 ## --- Variables de Visión y Detección ---
 var vision_range = 300.0
@@ -50,6 +51,10 @@ func _process(delta: float) -> void:
 	vision_raycast.force_raycast_update()	
 	
 func _physics_process(delta):
+	
+	_update_vision_cone()
+
+	
 	if player.invisible():
 		current_state = State.PATROLLING
 	forward = (navigation_agent.get_next_path_position() - global_position).normalized()
@@ -196,3 +201,16 @@ func _draw():
 		draw_line(Vector2.ZERO, points[0], vision_cone_color, 1.0)
 		draw_polyline(points, vision_cone_color, 1.0)
 		draw_line(Vector2.ZERO, points[-1], vision_cone_color, 1.0)
+		
+func _update_vision_cone():
+	var half_angle = deg_to_rad(vision_angle_degrees / 2.0)
+	var segments = 20
+	var points = PackedVector2Array()
+	points.append(Vector2.ZERO) # Centro del cono
+
+	for i in range(segments + 1):
+		var angle = -half_angle + ((half_angle) * 2.0 * i / segments)
+		points.append(Vector2.RIGHT.rotated(angle + rotation2) * vision_range)
+
+	vision_polygon.polygon = points
+	vision_polygon.color = Color(1, 1, 0.5, 0.4) # Amarillo claro translúcido

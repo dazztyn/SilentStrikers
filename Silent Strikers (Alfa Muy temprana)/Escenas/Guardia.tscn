@@ -132,3 +132,5 @@ script = ExtResource("5_g5ju6")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Vision"]
 polygon = PackedVector2Array(1, -2, 460, -165, 460, 165)
+
+[node name="Polygon2D" type="Polygon2D" parent="."]

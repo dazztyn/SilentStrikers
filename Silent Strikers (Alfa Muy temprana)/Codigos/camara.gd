@@ -8,6 +8,7 @@ extends Node2D
 
 @onready var player: CharacterBody2D = get_node("../Ladron")
 @onready var raycast: RayCast2D = $RayCast2D
+@onready var vision_polygon := $Polygon2D
 
 var player_detected: bool = false
 var last_known_position: Vector2 = Vector2.ZERO
@@ -25,6 +26,10 @@ func _process(delta):
 
 	if draw_vision_cone:
 		queue_redraw()
+
+func _physics_process(delta: float) -> void:
+		_update_vision_cone()
+
 
 func check_vision():
 	var dir_to_player = player.global_position - global_position
@@ -89,3 +94,16 @@ func _draw():
 		draw_line(Vector2.ZERO, points[0], vision_cone_color, 1.0)
 		draw_polyline(points, vision_cone_color, 1.0)
 		draw_line(Vector2.ZERO, points[-1], vision_cone_color, 1.0)
+		
+func _update_vision_cone():
+	var half_angle = deg_to_rad(vision_angle_degrees / 2.0)
+	var segments = 20
+	var points = PackedVector2Array()
+	points.append(Vector2.ZERO) # Centro del cono
+
+	for i in range(segments + 1):
+		var angle = -half_angle + ((half_angle) * 2.0 * i / segments)
+		points.append(Vector2.RIGHT.rotated(angle + rotation2) * vision_range)
+
+	vision_polygon.polygon = points
+	vision_polygon.color = Color(1, 1, 0.5, 0.4) # Amarillo claro translúcido
