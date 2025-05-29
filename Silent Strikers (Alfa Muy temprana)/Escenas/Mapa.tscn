@@ -114,7 +114,7 @@ position = Vector2(-1099, 239)
 scale = Vector2(0.44, 0.44)
 
 [node name="Camara" parent="." instance=ExtResource("7_aesrc")]
-position = Vector2(-47, 920)
+position = Vector2(1282, 1174)
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 script = ExtResource("3_1p004")
