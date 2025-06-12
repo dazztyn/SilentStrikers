@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=4 uid="uid://df8wgc7fxnvva"]
+[gd_scene load_steps=25 format=4 uid="uid://df8wgc7fxnvva"]
 
 [ext_resource type="Script" uid="uid://5odu651p2cuh" path="res://Codigos/mapa.gd" id="1_7syr3"]
 [ext_resource type="PackedScene" uid="uid://drs5cxv35r63x" path="res://Escenas/Player.tscn" id="1_lbiw5"]
@@ -17,6 +17,7 @@
 [ext_resource type="Texture2D" uid="uid://xo0sm7rqhs87" path="res://Sprites/sprits de prueba/New Piskel (13).png" id="12_yex7o"]
 [ext_resource type="Texture2D" uid="uid://nlpgntvqo06s" path="res://Sprites/sprits de prueba/New Piskel (9).png" id="13_h0jna"]
 [ext_resource type="Texture2D" uid="uid://c1d04k1ykdmrx" path="res://Sprites/sprits de prueba/New Piskel (10).png" id="14_yex7o"]
+[ext_resource type="Script" uid="uid://c06r7mhb0ss0t" path="res://Codigos/control.gd" id="18_vsyq2"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_habko"]
 vertices = PackedVector2Array(25, 25, -25, 25, -25, -25, 25, -25)
@@ -70,6 +71,82 @@ physics_layer_0/collision_layer = 1
 navigation_layer_0/layers = 1
 sources/0 = SubResource("TileSetAtlasSource_habko")
 
+[sub_resource type="GDScript" id="GDScript_aesrc"]
+script/source = "extends Node2D
+
+var socket := WebSocketPeer.new()
+var connected := false
+@onready var chat_ui = get_node(\"../CanvasLayer/Control\")
+
+func _ready():
+	var err = socket.connect_to_url(\"ws://localhost:8080\")
+	if err != OK:
+		print(\"❌ Error conectando:\", err)
+	else:
+		print(\"🔌 Intentando conectar...\")
+
+func _process(_delta):
+	socket.poll()
+
+	if socket.get_ready_state() == WebSocketPeer.STATE_OPEN:
+		if not connected:
+			connected = true
+			print(\"✅ Conectado al servidor WebSocket\")
+
+		while socket.get_available_packet_count() > 0:
+			var msg = socket.get_packet().get_string_from_utf8()
+			print(\"📩 Mensaje recibido RAW:\", msg)  # <-- Aquí vemos el mensaje			
+			_handle_message(msg)
+
+func _handle_message(json_text: String) -> void:
+	if json_text == \"\" or json_text == null:
+		print(\"⚠️ Mensaje vacío recibido\")
+		return
+	print(\"aqui estoy1\")
+	var parse_result = JSON.parse_string(json_text)
+	print(\"aqui estoy2\")
+	if parse_result == null:
+		print(\"❌ Error al parsear JSON:\", parse_result.error_string)
+		print(\"Mensaje recibido con error:\", json_text)
+		return
+
+	print(\"aqui estoy3\")
+	
+	var data = parse_result['text']
+	var tipo = parse_result['type']
+	print(\"🧩 Tipo de data parseada:\", typeof(data))
+	print(\"📦 Contenido data:\", data)
+
+
+
+	if str(tipo) ==	\"chat\":
+			if str(data) != \"\":
+				chat_ui.show_chat_message(str(data))
+			else:
+				print(\"⚠️ Mensaje chat sin campo 'text':\", json_text)
+
+func send_chat_message(text: String) -> void:
+	if connected:
+		var payload = {
+			\"type\": \"chat\",
+			\"text\": text
+		}
+		socket.send_text(JSON.stringify(payload))
+	else:
+		print(\"❌ No conectado, no se puede enviar mensaje\")
+
+func send_score(player_name: String, score: int) -> void:
+	if connected:
+		var payload = {
+			\"type\": \"score\",
+			\"player\": player_name,
+			\"score\": score
+		}
+		socket.send_text(JSON.stringify(payload))
+	else:
+		print(\"❌ No conectado, no se puede enviar score\")
+"
+
 [node name="Mapa de Prueba" type="Node2D"]
 script = ExtResource("1_7syr3")
 
@@ -116,8 +193,51 @@ scale = Vector2(0.44, 0.44)
 [node name="Camara" parent="." instance=ExtResource("7_aesrc")]
 position = Vector2(1337, 571)
 
+[node name="ws" type="Node2D" parent="."]
+script = SubResource("GDScript_aesrc")
+
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 script = ExtResource("3_1p004")
+
+[node name="Control" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 655.0
+offset_top = -19.0
+offset_right = 1091.0
+offset_bottom = 289.0
+script = ExtResource("18_vsyq2")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.778
+anchor_bottom = 0.675
+offset_right = 160.792
+offset_bottom = 292.1
+scale = Vector2(3, 3)
+
+[node name="Label" type="Label" parent="CanvasLayer/Control/VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/Control/VBoxContainer"]
+layout_mode = 2
+
+[node name="LineEdit" type="LineEdit" parent="CanvasLayer/Control/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="CanvasLayer/Control/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="Panel" type="Panel" parent="CanvasLayer/Control"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control/Panel"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
 
 [node name="ScoreLabel" type="Label" parent="CanvasLayer"]
 anchors_preset = -1

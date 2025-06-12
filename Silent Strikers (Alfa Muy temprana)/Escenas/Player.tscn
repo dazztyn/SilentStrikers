@@ -15,6 +15,7 @@ var puntaje_win = 1000 # La cantidad de pts para ganar
 var game = false # Para ver si la partida termino o sigue
 var invisibility_time = 5
 
+
 var jugador: CharacterBody2D
 var potenciador: Area2D
 var potenciador_duplicado: Area2D #instancia duplicada del potenciador
@@ -22,9 +23,11 @@ var mapa: Node2D
 @export var spawn_points: Array[NodePath] = []
 var spawn_index = 0
 var invisibilidad_usada = false #para que el cooldown empiece a correr sólo cuando se usó
+var ws: Node2D
 
 func _ready():
 	salud = 3
+	ws = get_node(\"../ws\")
 	jugador = get_node(\".\")
 	mapa = get_node(\"..\")
 	potenciador = get_node(\"../Area2D\")
