@@ -41,7 +41,7 @@ var chasing_timer = 0.0
 
 func _ready():
 	player = get_node("../Ladron")
-	add_to_group("Guardias")
+	add_to_group("GuardiasMP")
 	vision_raycast.add_exception(self)
 	vision_raycast.collision_mask = wall_collision_mask | player.collision_layer
 	if patrol_area_node:

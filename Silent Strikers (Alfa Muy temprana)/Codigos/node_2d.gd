@@ -7,5 +7,5 @@ extends Node2D  # o SubViewport si lo ponés ahí
 func _process(_delta):
 	jugador_icono.global_position = jugador.global_position
 	
-	for guardia in get_tree().get_nodes_in_group("Guardias"):
+	for guardia in get_tree().get_nodes_in_group("GuardiasM1"):
 		guardia_icono.global_position = guardia.global_position

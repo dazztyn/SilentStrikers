@@ -13,7 +13,7 @@ var player: CharacterBody2D
 var salud: int 
 
 func _ready():
-	player = get_node("../CharacterBody2D")  # Ajusta la ruta al nodo del jugador
+	player = get_node("/root/TestMapa1/CharacterBody2D")
 	
 	# Verificar si la referencia al jugador es válida
 	if player == null:
