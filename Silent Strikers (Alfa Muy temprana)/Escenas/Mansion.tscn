@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=4 uid="uid://bj4uwxkcoduja"]
+[gd_scene load_steps=26 format=4 uid="uid://chq2bf40ekhie"]
 
 [ext_resource type="Texture2D" uid="uid://brmwx5ulu8t76" path="res://Tiles mapas/tileset-mapa1-brillo.png" id="1_vqv8r"]
 [ext_resource type="Texture2D" uid="uid://cuecitndoyo4b" path="res://Tiles mapas/Experimental.png" id="2_cn7dx"]
@@ -1567,3 +1567,10 @@ max_value = 550.0
 texture_under = ExtResource("12_nofbg")
 texture_over = ExtResource("13_u1ko5")
 texture_progress = ExtResource("14_2y381")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = -788.0
+offset_top = -689.0
+offset_right = 3655.0
+offset_bottom = 1889.0
+color = Color(0.145122, 0.127442, 0.138503, 0.443137)

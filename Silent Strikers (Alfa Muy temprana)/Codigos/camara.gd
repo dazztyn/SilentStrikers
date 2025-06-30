@@ -14,6 +14,7 @@ var last_known_position: Vector2 = Vector2.ZERO
 var rotation2 := rotation  # dirección visual de la cámara
 
 func _ready():
+	player = get_node("../Player")
 	raycast.collision_mask = wall_collision_mask | player.collision_layer
 
 func _process(delta):
