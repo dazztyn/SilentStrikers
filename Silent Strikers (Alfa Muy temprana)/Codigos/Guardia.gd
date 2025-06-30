@@ -1,5 +1,12 @@
 extends CharacterBody2D
+
 @onready var state_label: Label = $StateLabel #DEBUG
+@onready var vision_polygon := $Polygon2D
+@onready var line_of_sight: RayCast2D = $VisionRayCast
+@onready var vision_cone: Area2D = $Vision
+@onready var flashlight: PointLight2D = $FlashLight
+@onready var navigation_agent: NavigationAgent2D = $NavigationAgent2D
+@onready var animations: AnimatedSprite2D = get_node("AnimatedSprite2D")
 
 ## --- Variables de Movimiento y Navegación ---
 var speed = 300
@@ -8,22 +15,19 @@ var forward
 @export var navigation_region: NavigationRegion2D
 @export var player: CharacterBody2D
 var rotation2 = rotation
-@onready var navigation_agent: NavigationAgent2D = $NavigationAgent2D
-@onready var animations: AnimatedSprite2D = get_node("AnimatedSprite2D")
 
 ## --- Variables de Visión y Detección ---
 var wall_collision_mask = 1
-@onready var line_of_sight: RayCast2D = $VisionRayCast
-@onready var vision_cone: Area2D = $Vision # Asegúrate que el nodo se llame así
-@onready var flashlight: PointLight2D = $FlashLight # El nodo de luz
 var player_in_vision_cone = false
+@export var vision_angle_degrees := 60.0
+@export var vision_range := 200.0
 
 ## --- Variables de Estado ---
 enum State { PATROLLING, CHASING, SEARCHING }
 var current_state = State.PATROLLING
 var last_known_player_position = Vector2.ZERO
 
-## --- Tiempo de búsqueda ---\
+## --- Tiempo de búsqueda ---
 @export var search_radius = 200.0 
 var search_duration = 10.0
 var search_timer = 0.0
@@ -48,6 +52,7 @@ func _physics_process(delta: float):
 	forward = (navigation_agent.get_next_path_position() - global_position).normalized()
 	if forward == Vector2.ZERO:
 		forward = Vector2.RIGHT.rotated(rotation)
+
 	match current_state:
 		State.PATROLLING:
 			speed = 200
@@ -58,7 +63,7 @@ func _physics_process(delta: float):
 		State.SEARCHING:
 			speed = 200
 			_process_searching(delta)
-	
+
 	if player_in_vision_cone:
 		check_line_of_sight()
 
@@ -68,21 +73,24 @@ func _physics_process(delta: float):
 		vision_cone.rotation = rotation2
 		line_of_sight.rotation = rotation2
 		flashlight.rotation = rotation2
+
 		var horizontal = false
-		if move_dir.x > 0 and (move_dir.y > -0.3 and move_dir.y < 0.3):
+		if move_dir.x > 0 and abs(move_dir.y) < 0.3:
 			animations.play("Derecha")
 			horizontal = true
-		elif move_dir.x < 0 and (move_dir.y > -0.3 and move_dir.y < 0.3):
+		elif move_dir.x < 0 and abs(move_dir.y) < 0.3:
 			animations.play("Izquierda")
 			horizontal = true
+
 		if not horizontal:
-			if move_dir.y > 0  or (move_dir.y > 0 and move_dir.x < 0) or (move_dir.y > 0 and move_dir.x > 0):
+			if move_dir.y > 0:
 				animations.play("Abajo")
-			elif move_dir.y < 0 or (move_dir.y < 0 and move_dir.x < 0) or (move_dir.y < 0 and move_dir.x > 0):
+			elif move_dir.y < 0:
 				animations.play("Arriba")
-	
+
+	_update_vision_cone()
 	move_and_slide()
-	
+
 func _process_patrolling(delta):
 	if navigation_agent.is_navigation_finished():
 		_set_next_patrol_point()
@@ -144,13 +152,12 @@ func _set_next_patrol_point():
 
 		for outline_index in range(nav_poly.get_outline_count()):
 			var polygon_points = nav_poly.get_outline(outline_index)
-			
 			if Geometry2D.is_point_in_polygon(random_point, polygon_points):
 				var map = navigation_region.get_navigation_map()
 				var closest_valid_point = NavigationServer2D.map_get_closest_point(map, random_point)
-				
 				navigation_agent.target_position = closest_valid_point
 				return
+
 	print("[Guardia] No se pudo encontrar un punto de patrulla válido después de %d intentos." % MAX_ATTEMPTS)
 
 func _on_player_detected():
@@ -165,28 +172,23 @@ func _on_player_lost():
 		search_timer = search_duration
 
 func _on_vision_body_entered(body: Node2D):
-	# Se ejecuta cuando algo entra en el Area2D
 	if body == player:
 		player_in_vision_cone = true
 		print("Jugador entró en el cono de visión.")
 
 func _on_vision_body_exited(body: Node2D):
-	# Se ejecuta cuando algo sale del Area2D
 	if body == player:
 		player_in_vision_cone = false
 		print("Jugador salió del cono de visión.")
 		if current_state == State.CHASING:
 			_on_player_lost()
 
-
 func check_line_of_sight():
 	line_of_sight.target_position = to_local(player.global_position)
 	line_of_sight.force_raycast_update()
-
 	if not line_of_sight.is_colliding():
 		if current_state != State.CHASING:
 			_on_player_detected()
-			
 		last_known_player_position = player.global_position
 		set_state(State.CHASING)
 	else:
@@ -195,9 +197,8 @@ func check_line_of_sight():
 func set_state(new_state):
 	if new_state == current_state:
 		return
-
 	current_state = new_state
-	if state_label: 
+	if state_label:
 		match current_state:
 			State.PATROLLING:
 				state_label.text = "Patrolling"
@@ -205,3 +206,16 @@ func set_state(new_state):
 				state_label.text = "CHASING!"
 			State.SEARCHING:
 				state_label.text = "Searching..."
+
+func _update_vision_cone():
+	var half_angle = deg_to_rad(vision_angle_degrees / 2.0)
+	var segments = 20
+	var points = PackedVector2Array()
+	points.append(Vector2.ZERO)
+
+	for i in range(segments + 1):
+		var angle = -half_angle + ((half_angle * 2.0) * i / segments)
+		points.append(Vector2.RIGHT.rotated(angle + rotation2) * vision_range)
+
+	vision_polygon.polygon = points
+	vision_polygon.color = Color(1, 1, 0.5, 0.4)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=4 uid="uid://chq2bf40ekhie"]
+[gd_scene load_steps=26 format=4 uid="uid://boxt8jcjxq02j"]
 
 [ext_resource type="Texture2D" uid="uid://brmwx5ulu8t76" path="res://Tiles mapas/tileset-mapa1-brillo.png" id="1_vqv8r"]
 [ext_resource type="Texture2D" uid="uid://cuecitndoyo4b" path="res://Tiles mapas/Experimental.png" id="2_cn7dx"]

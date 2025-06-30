@@ -1,6 +1,6 @@
 [gd_scene load_steps=21 format=3 uid="uid://drs5cxv35r63x"]
 
-[ext_resource type="Script" uid="uid://smr3i2rbrfb6" path="res://Codigos/Player.gd" id="1_c1rio"]
+[ext_resource type="Script" path="res://Codigos/Player.gd" id="1_c1rio"]
 [ext_resource type="Texture2D" uid="uid://3hyj7fsmhhex" path="res://Sprites/1. Protagonista/spritesheetsimetrico2.png" id="2_wwpud"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wwpud"]
@@ -141,7 +141,7 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="CharacterBody2D" type="CharacterBody2D"]
+[node name="CharacterBody2D2" type="CharacterBody2D"]
 collision_layer = 2
 collision_mask = 3
 script = ExtResource("1_c1rio")

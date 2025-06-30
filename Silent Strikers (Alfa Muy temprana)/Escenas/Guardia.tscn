@@ -217,5 +217,7 @@ offset_right = 22.0
 offset_bottom = -69.0
 horizontal_alignment = 1
 
+[node name="Polygon2D" type="Polygon2D" parent="."]
+
 [connection signal="body_entered" from="Vision" to="." method="_on_vision_body_entered"]
 [connection signal="body_exited" from="Vision" to="." method="_on_vision_body_exited"]
