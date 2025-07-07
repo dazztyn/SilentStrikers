@@ -25,7 +25,6 @@ func _ready():
 	oportunidad_3.value = 1
 
 		
-	update_hud()
 
 func _process(delta):
 	if player != null:
@@ -53,4 +52,4 @@ func update_hud():# Actualiza las etiquetas del HUD con los valores del jugador
 	elif player.salud == 1:
 		oportunidad_2.value=0
 	elif player.salud == 0:
-		oportunidad_1.value = 1
+		oportunidad_1.value = 0
