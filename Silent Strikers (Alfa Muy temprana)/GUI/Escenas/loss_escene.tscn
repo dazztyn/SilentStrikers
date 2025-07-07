@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://c1wuaquc176pl"]
+[gd_scene load_steps=5 format=3 uid="uid://c1wuaquc176pl"]
 
 [ext_resource type="Script" uid="uid://b8l5veospmw5c" path="res://GUI/loss_escene.gd" id="1_blbly"]
 [ext_resource type="Script" uid="uid://4hvg1bxo8wq" path="res://GUI/ChatSystem.gd" id="2_63utq"]
 [ext_resource type="Script" uid="uid://jcqpaxgrjj02" path="res://GUI/WScript.gd" id="2_cp0fe"]
+[ext_resource type="VideoStream" uid="uid://b2hgteg053axc" path="res://GUI/Gifs/patapin.ogv" id="4_uphtl"]
 
 [node name="LossEscene" type="Node"]
 script = ExtResource("1_blbly")
@@ -51,3 +52,12 @@ offset_left = 29.0
 offset_top = 572.0
 offset_right = 72.0
 offset_bottom = 610.0
+
+[node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="."]
+offset_left = 1200.0
+offset_top = 3.0
+offset_right = 1920.0
+offset_bottom = 1283.0
+stream = ExtResource("4_uphtl")
+volume_db = -30.0
+autoplay = true
