@@ -415,7 +415,7 @@ func go_to_defeat_scene():
 		get_tree().change_scene_to_file("res://GUI/Escenas/loss_escene.tscn")
 	else:
 		print("💀 Cargando pantalla de derrota SINGLEPLAYER")
-		get_tree().change_scene_to_file("res://Escenas/defeat_screen.tscn")
+		get_parent().salir()
 
 func aumentar_velocidad(cantidad):
 	if muerto or speed >= velMax:
