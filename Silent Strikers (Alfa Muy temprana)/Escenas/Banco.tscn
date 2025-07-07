@@ -1786,6 +1786,7 @@ script = ExtResource("15_deglr")
 texture = ExtResource("16_bhaya")
 
 [node name="Tiles" type="Node2D" parent="HUD/Minimapa/SubViewport"]
+z_index = -1
 
 [node name="suelo" type="TileMapLayer" parent="HUD/Minimapa/SubViewport/Tiles"]
 use_parent_material = true
