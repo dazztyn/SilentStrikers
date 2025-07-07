@@ -307,27 +307,25 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 15.0
-offset_top = -62.0
-offset_right = 315.0
-offset_bottom = 52.0
+offset_left = -4.0
+offset_top = -6.0
+offset_right = 26.0
+offset_bottom = 22.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("1_o5orl")
-expand_mode = 3
-stretch_mode = 4
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.429
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -179.208
-offset_top = 26.0
-offset_right = 257.0
-offset_bottom = 106.0
+anchor_left = 0.336
+anchor_top = 0.524
+anchor_right = 0.634
+anchor_bottom = 0.598
+offset_left = 42.8799
+offset_top = 357.08
+offset_right = 43.72
+offset_bottom = 374.16
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 9
@@ -348,13 +346,13 @@ text = "Volver al menú"
 
 [node name="Label" type="Label" parent="."]
 layout_mode = 0
-offset_left = 297.0
-offset_top = 192.0
-offset_right = 854.0
-offset_bottom = 253.0
+offset_left = 446.0
+offset_top = 60.0
+offset_right = 1559.0
+offset_bottom = 148.0
 theme_override_colors/font_color = Color(1, 0.8, 0, 1)
 theme_override_fonts/font = ExtResource("2_4nbv4")
-theme_override_font_sizes/font_size = 50
+theme_override_font_sizes/font_size = 100
 text = "¡Misión completada!"
 
 [connection signal="pressed" from="VBoxContainer/BackMenuButton" to="." method="_on_back_menu_button_pressed"]
