@@ -2,7 +2,7 @@ extends Node
 
 # WebSocket peer
 var websocket: WebSocketPeer
-var server_url = "ws://localhost:4010/?gameId=B&playerName=Teto"
+var server_url = "ws://ucn-game-server.martux.cl:4010/?gameId=B&playerName=Teto"
 
 # Estado de conexión
 var is_connected = false

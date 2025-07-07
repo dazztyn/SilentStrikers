@@ -269,7 +269,6 @@ func apply_opponent_death_notification():
 			"final_score": puntaje
 		})
 	
-	await get_tree().create_timer(1.0).timeout
 	go_to_victory_scene()
 
 func _on_opponent_won(data: Dictionary):
@@ -282,7 +281,6 @@ func _on_opponent_won(data: Dictionary):
 	muerto = true
 	game = true
 	
-	await get_tree().create_timer(1.0).timeout
 	go_to_defeat_scene()
 
 func apply_spell_z_effect():
@@ -379,7 +377,6 @@ func aumentar_puntaje(cantidad):
 					"final_score": puntaje
 				})
 		
-		await get_tree().create_timer(1.0).timeout
 		go_to_victory_scene()
 
 func perder_salud(cantidad):
@@ -396,7 +393,6 @@ func perder_salud(cantidad):
 				send_spell("death")
 				print("📡 Señal de muerte enviada al oponente")
 		
-		await get_tree().create_timer(2.0).timeout
 		go_to_defeat_scene()
 
 # === FUNCIONES DE NAVEGACIÓN SEGÚN MODO ===
