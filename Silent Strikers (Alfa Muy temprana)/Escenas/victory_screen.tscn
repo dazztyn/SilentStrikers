@@ -1,8 +1,9 @@
-[gd_scene load_steps=12 format=4 uid="uid://dc8ku80qhkjqc"]
+[gd_scene load_steps=13 format=4 uid="uid://dc8ku80qhkjqc"]
 
 [ext_resource type="Script" uid="uid://6o58gku2lopy" path="res://GUI/BackToMenu.gd" id="1_4nbv4"]
 [ext_resource type="Texture2D" uid="uid://cdpjri02qbn" path="res://assets/victory_background.png" id="1_o5orl"]
 [ext_resource type="FontFile" uid="uid://c8u4n25tng03p" path="res://assets/fonts/VCR_OSD_MONO_1.001.ttf" id="2_4nbv4"]
+[ext_resource type="AudioStream" uid="uid://ca1kjqbnibhr3" path="res://sonidos/win.mp3" id="4_kof0r"]
 
 [sub_resource type="Image" id="Image_ws5tn"]
 data = {
@@ -354,5 +355,9 @@ theme_override_colors/font_color = Color(1, 0.8, 0, 1)
 theme_override_fonts/font = ExtResource("2_4nbv4")
 theme_override_font_sizes/font_size = 100
 text = "¡Misión completada!"
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("4_kof0r")
+autoplay = true
 
 [connection signal="pressed" from="VBoxContainer/BackMenuButton" to="." method="_on_back_menu_button_pressed"]

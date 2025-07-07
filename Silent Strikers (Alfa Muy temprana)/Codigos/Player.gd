@@ -13,10 +13,14 @@ var jugador: CharacterBody2D
 var potenciador_duplicado: Area2D #instancia duplicada del potenciador
 var item_duplicado: Area2D #instancia duplicada del item robable
 var mapa: Node2D
-
+@onready var footstep_audio: AudioStreamPlayer2D = $pasos
 # === SISTEMA DE MODO DE JUEGO ===
 var is_multiplayer: bool = false
 var multiplayer_errors: int = 0  # Contador de errores de multiplayer
+# === VARIABLES PARA SONIDOS DE PASO ===
+var is_walking: bool = false
+var footstep_timer: float = 0.0
+var footstep_interval: float = 0.4  # Intervalo entre pasos en segundos
 
 # === SISTEMA DE HECHIZOS SIMPLES ===
 var spell_z_cost = 200    # Costo hechizo Z
@@ -46,6 +50,8 @@ func _ready():
 	# Detectar modo de juego
 	detect_game_mode()
 	
+	setup_footstep_audio()
+	
 	# Conectar señales solo si es multiplayer
 	if is_multiplayer and WebSocketManager:
 		WebSocketManager.connect("game_data_received", _on_spell_received)
@@ -59,6 +65,12 @@ func detect_game_mode():
 	else:
 		is_multiplayer = false
 		print("🎮 Modo: SINGLEPLAYER")
+
+func setup_footstep_audio():
+	if footstep_audio:
+		footstep_audio.volume_db = -15.0  # Ajusta el volumen según necesites
+		footstep_audio.autoplay = false
+		footstep_audio.stream_paused = false
 
 func _on_websocket_message(data: Dictionary):
 	# Interceptar mensajes para detectar errores de send-game-data
@@ -142,7 +154,46 @@ func _process(delta):
 	
 	update_animation()
 
+	handle_footstep_sounds(delta)
+
 	move_and_slide()
+
+# === SISTEMA DE SONIDOS DE PASO ===
+func handle_footstep_sounds(delta):
+	var was_walking = is_walking
+	is_walking = velocity.length() > 0
+	
+	if is_walking:
+		footstep_timer += delta
+		# Ajustar intervalo según velocidad
+		var current_interval = footstep_interval
+		if velocity.length() > 400:  # Corriendo rápido
+			current_interval = 0.25
+		elif velocity.length() > 300:  # Corriendo normal
+			current_interval = 0.3
+		else:  # Caminando
+			current_interval = 0.4
+		
+		if footstep_timer >= current_interval:
+			footstep_timer = 0.0
+			play_footstep_sound()
+	else:
+		footstep_timer = 0.0
+		# Si dejó de caminar, parar el audio gradualmente
+		if was_walking and footstep_audio and footstep_audio.playing:
+			stop_footstep_sound()
+
+func play_footstep_sound():
+	if footstep_audio and footstep_audio.stream:
+		# Solo reproducir si no está ya sonando para evitar solapamientos
+		if not footstep_audio.playing:
+			footstep_audio.play()
+
+func stop_footstep_sound():
+	if footstep_audio and footstep_audio.playing:
+		footstep_audio.stop()
+
+
 
 # === SISTEMA DE HECHIZOS ===
 
@@ -301,7 +352,7 @@ func apply_spell_z_effect():
 	add_child(timer)
 	timer.start()
 
-func apply_spell_x_effect():
+func apply_spell_c_effect():
 	print("😵 Aturdido por el rival papu")
 	
 	var original_speed = speed
@@ -319,7 +370,7 @@ func apply_spell_x_effect():
 	add_child(timer)
 	timer.start()
 
-func apply_spell_c_effect():
+func apply_spell_x_effect():
 	print("🌀 Tus controles han sido confundidos por el oponente")
 	
 	controls_confused = true

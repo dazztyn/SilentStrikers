@@ -153,7 +153,7 @@ func handle_message(message: String):
 		"close-match":
 			handle_close_match()
 		"quit-match":
-			handle_quit_match_response(data.get("data", {}))  # ✅ Confirmación de MI salida
+			handle_quit_match_response()
 		"error":
 			handle_error(data.get("data", {}))
 		
@@ -217,7 +217,7 @@ func handle_close_match():
 	print("📝 Cualquier solicitud de revancha ha sido cancelada automáticamente")
 	emit_signal("match_quit")
 
-func handle_quit_match_response(data: Dictionary):
+func handle_quit_match_response():
 	print("✅ QUIT-MATCH: Confirmación de que salí de la partida")
 	emit_signal("match_quit")
 	
