@@ -33,7 +33,6 @@ func _process(delta):
 func update_hud():# Actualiza las etiquetas del HUD con los valores del jugador
 
 	score_label.text = "Puntaje: " + str(player.puntaje)
-	life_label.text = "Vida: " + str(player.salud)
 	
 	if player.puntaje <=150:
 		barra_de_puntaje_1.value = player.puntaje

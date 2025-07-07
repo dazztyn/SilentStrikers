@@ -2246,6 +2246,7 @@ outlines = Array[PackedVector2Array]([PackedVector2Array(-726, -3291, -149, -329
 [node name="Testmapa2" type="Node2D"]
 
 [node name="Player" parent="." instance=ExtResource("1_n87ba")]
+visible = false
 z_index = 1
 position = Vector2(266, 252)
 spawn_points_it = Array[NodePath]([NodePath("../Marker2D"), NodePath("../Marker2D2"), NodePath("../Marker2D3"), NodePath("../Marker2D4"), NodePath("../Marker2D5")])
