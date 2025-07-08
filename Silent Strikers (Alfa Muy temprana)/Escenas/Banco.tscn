@@ -1616,7 +1616,7 @@ position = Vector2(560, 109)
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2(1, -1)
-zoom = Vector2(0.2, 0.2)
+zoom = Vector2(2, 2)
 
 [node name="Guardia_1" parent="." node_paths=PackedStringArray("navigation_region") instance=ExtResource("7_21210")]
 position = Vector2(2003, 1146)
