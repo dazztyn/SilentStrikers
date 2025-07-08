@@ -1,4 +1,4 @@
-[gd_scene load_steps=54 format=4 uid="uid://dbicubno0126o"]
+[gd_scene load_steps=55 format=4 uid="uid://dbicubno0126o"]
 
 [ext_resource type="Texture2D" uid="uid://d1ugwl33ka3du" path="res://assets/Tiles mapas/tileset2.png" id="1_my4lf"]
 [ext_resource type="PackedScene" uid="uid://drs5cxv35r63x" path="res://Escenas/Player.tscn" id="1_n87ba"]
@@ -27,6 +27,7 @@
 [ext_resource type="Texture2D" uid="uid://cupu8hi6ix3lq" path="res://assets/Sprites/UIs/vida.png" id="25_ua2ai"]
 [ext_resource type="PackedScene" uid="uid://d1ouhuslclwme" path="res://Escenas/Guardia.tscn" id="26_ua2ai"]
 [ext_resource type="PackedScene" uid="uid://cwbr2i4lpl8yd" path="res://Escenas/camara.tscn" id="27_dh30r"]
+[ext_resource type="PackedScene" uid="uid://b2d1lacrstmpj" path="res://Escenas/item.tscn" id="28_shtlw"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_my4lf"]
 vertices = PackedVector2Array(23, 23, -23, 23, -23, -23, 23, -23)
@@ -2584,3 +2585,27 @@ player = NodePath("../Player")
 [node name="Camara" parent="." node_paths=PackedStringArray("player") instance=ExtResource("27_dh30r")]
 position = Vector2(1289, -187)
 player = NodePath("../Player")
+
+[node name="item" parent="." instance=ExtResource("28_shtlw")]
+position = Vector2(1283, 287)
+scale = Vector2(0.2, 0.2)
+collision_layer = 2
+collision_mask = 3
+
+[node name="Marker2D" type="Marker2D" parent="."]
+position = Vector2(1372, 79)
+
+[node name="Marker2D2" type="Marker2D" parent="."]
+position = Vector2(1325, 481)
+
+[node name="Marker2D3" type="Marker2D" parent="."]
+position = Vector2(1451, 711)
+
+[node name="Marker2D4" type="Marker2D" parent="."]
+position = Vector2(2125, 662)
+
+[node name="Marker2D5" type="Marker2D" parent="."]
+position = Vector2(1823, 650)
+
+[node name="Marker2D6" type="Marker2D" parent="."]
+position = Vector2(2290, 378)
