@@ -1,4 +1,8 @@
+<<<<<<< Updated upstream
 [gd_scene load_steps=44 format=4 uid="uid://d4lyib7n06dms"]
+=======
+[gd_scene load_steps=49 format=4 uid="uid://d4lyib7n06dms"]
+>>>>>>> Stashed changes
 
 [ext_resource type="Texture2D" uid="uid://brmwx5ulu8t76" path="res://assets/Tiles mapas/tileset-mapa1-brillo.png" id="1_vqv8r"]
 [ext_resource type="Texture2D" uid="uid://cuecitndoyo4b" path="res://assets/Tiles mapas/Experimental.png" id="2_cn7dx"]
@@ -17,6 +21,12 @@
 [ext_resource type="Texture2D" uid="uid://c1d04k1ykdmrx" path="res://assets/Sprites/sprits de prueba/New Piskel (10).png" id="14_2y381"]
 [ext_resource type="Texture2D" uid="uid://3v2beybe0ji6" path="res://assets/Sprites/UIs/vida_perdida.png" id="15_e5jov"]
 [ext_resource type="Texture2D" uid="uid://cupu8hi6ix3lq" path="res://assets/Sprites/UIs/vida.png" id="16_8kqfa"]
+<<<<<<< Updated upstream
+=======
+[ext_resource type="PackedScene" uid="uid://b2d1lacrstmpj" path="res://Escenas/item.tscn" id="16_k1w2r"]
+[ext_resource type="PackedScene" uid="uid://jyu2vbo07tku" path="res://Escenas/potenciador.tscn" id="17_5jo1w"]
+[ext_resource type="AudioStream" uid="uid://bi83ax5ujoomf" path="res://sonidos/Musica/Mission Impossible Theme (Full Theme).mp3" id="20_5hwbx"]
+>>>>>>> Stashed changes
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_qdyep"]
 vertices = PackedVector2Array(23, 23, -23, 23, -23, -23, 23, -23)
@@ -5097,3 +5107,49 @@ navigation_polygon = SubResource("NavigationPolygon_6q0rs")
 visible = false
 position = Vector2(3379, 2304)
 navigation_polygon = SubResource("NavigationPolygon_s3cwq")
+<<<<<<< Updated upstream
+=======
+
+[node name="Marker2D9" type="Marker2D" parent="."]
+position = Vector2(49, 2999)
+
+[node name="Marker2D10" type="Marker2D" parent="."]
+position = Vector2(2492, 2580)
+
+[node name="Marker2D11" type="Marker2D" parent="."]
+position = Vector2(676, 2522)
+
+[node name="Marker2D12" type="Marker2D" parent="."]
+position = Vector2(2259, 2562)
+
+[node name="Marker2D13" type="Marker2D" parent="."]
+position = Vector2(-20, 3678)
+
+[node name="Marker2D14" type="Marker2D" parent="."]
+position = Vector2(1044, 3824)
+
+[node name="Marker2D15" type="Marker2D" parent="."]
+position = Vector2(3258, 3598)
+
+[node name="Marker2D16" type="Marker2D" parent="."]
+position = Vector2(3074, 2668)
+
+[node name="item2" parent="." instance=ExtResource("16_k1w2r")]
+position = Vector2(383, 2998)
+scale = Vector2(0.2, 0.2)
+collision_layer = 2
+collision_mask = 3
+
+[node name="potenciador2" parent="." instance=ExtResource("17_5jo1w")]
+position = Vector2(544, 2978)
+scale = Vector2(0.3, 0.3)
+collision_layer = 2
+collision_mask = 3
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+position = Vector2(1255, 651)
+stream = ExtResource("20_5hwbx")
+volume_db = -30.0
+autoplay = true
+parameters/looping = true
+>>>>>>> Stashed changes

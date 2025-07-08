@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=4 uid="uid://dl2c808di5er1"]
+[gd_scene load_steps=31 format=4 uid="uid://dl2c808di5er1"]
 
 [ext_resource type="Texture2D" uid="uid://bd32yf8lfvp0e" path="res://assets/Tiles mapas/Interiors_free_48x48.png" id="1_kgjmw"]
 [ext_resource type="Texture2D" uid="uid://cji12h6yd886u" path="res://assets/caja fuerte (1) (1).png" id="2_tpfsg"]
@@ -20,6 +20,7 @@
 [ext_resource type="Texture2D" uid="uid://b1rlteqk18guf" path="res://assets/Sprites/sprits de prueba/New Piskel (11).png" id="19_0jfhd"]
 [ext_resource type="Texture2D" uid="uid://nlpgntvqo06s" path="res://assets/Sprites/sprits de prueba/New Piskel (9).png" id="20_vcnbm"]
 [ext_resource type="Texture2D" uid="uid://c1d04k1ykdmrx" path="res://assets/Sprites/sprits de prueba/New Piskel (10).png" id="21_7sdlv"]
+[ext_resource type="AudioStream" uid="uid://dj3aqkygyycot" path="res://sonidos/Musica/Bad.mp3" id="21_860fa"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tx37k"]
 texture = ExtResource("1_kgjmw")
@@ -1835,3 +1836,24 @@ player = NodePath("../Player")
 [node name="Camara5" parent="." node_paths=PackedStringArray("player") instance=ExtResource("7_r0jbp")]
 position = Vector2(3872, 1870)
 player = NodePath("../Player")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+position = Vector2(2325, -471)
+stream = ExtResource("21_860fa")
+volume_db = -25.0
+autoplay = true
+parameters/looping = true
+
+[node name="AudioStreamPlayer2D2" type="AudioStreamPlayer2D" parent="."]
+position = Vector2(4010, 750)
+stream = ExtResource("21_860fa")
+volume_db = -25.0
+autoplay = true
+parameters/looping = true
+
+[node name="AudioStreamPlayer2D3" type="AudioStreamPlayer2D" parent="."]
+position = Vector2(4017, -1123)
+stream = ExtResource("21_860fa")
+volume_db = -25.0
+autoplay = true
+parameters/looping = true
