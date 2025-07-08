@@ -20,6 +20,14 @@ func _ready():
 	WebSocketManager.connect("game_ended", _on_game_ended)
 	WebSocketManager.connect("match_request_canceled", _on_match_request_canceled)
 	WebSocketManager.connect("match_request_canceled_by_sender", _on_match_request_canceled_by_sender)
+	WebSocketManager.connect("match_rejected", _on_match_rejected)
+
+func _on_match_rejected(data: Dictionary):
+	var player_list = get_node_or_null("../PlayerListSystem")
+	var player_id = data.get("playerId", "")
+	if player_list and player_list.has_method("_on_match_rejected"):
+		player_list._on_match_rejected(data)
+		_on_match_request_canceled(player_id)
 
 func _on_rematch_request():
 	if ChatSystem and ChatSystem.has_method("on_message_received"):

@@ -33,7 +33,8 @@ signal chat_message_received(sender, message)
 signal private_message_received(sender, player_id, message)
 signal message_received(data)
 signal match_request_canceled(player_id)  # ← NUEVA SEÑAL
-signal match_request_canceled_by_sender(player_name, player_id)  # ← NUEVA SEÑAL
+signal match_request_canceled_by_sender(player_name, player_id)
+signal match_rejected(data)   # ← NUEVA SEÑAL
 
 func _ready():
 	print("🔗 WebSocketManager Singleton iniciado")
@@ -148,6 +149,8 @@ func handle_message(message: String):
 			handle_match_request_received(data.get("data", {}), msg)
 		"match-accepted":
 			handle_match_accepted(data.get("data", {}))
+		"match-rejected":
+			handle_match_rejected(data.get("data", {}))
 		"players-ready":
 			handle_players_ready(data.get("data", {}))
 		"match-start":
@@ -168,7 +171,16 @@ func handle_message(message: String):
 			handle_match_canceled_by_sender(data.get("data", {}), msg)
 		"error":
 			handle_error(data.get("data", {}))
-		
+
+func handle_match_rejected(data: Dictionary):
+	var player_id = data.get("playerId", "")
+	print("❌ Solicitud de partida rechazada por jugador ID: ", player_id)
+	if pending_sent_requests.has(player_id):
+		pending_sent_requests.erase(player_id)
+		print("✅ Solicitud pendiente removida para jugador: ", player_id)
+	
+	emit_signal("match_rejected", data)
+
 func handle_login(data: Dictionary):
 	player_data = data
 	print("✅ Login exitoso - ID: ", data.get("id", ""))

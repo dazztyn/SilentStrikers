@@ -3,7 +3,7 @@ extends CharacterBody2D
 @onready var state_label: Label = $StateLabel #DEBUG
 
 ## --- Variables de Movimiento y Navegación ---
-var speed = 300
+var speed = 500
 var acceleration = 7.0
 var hit_cooldown = 1.5
 var forward

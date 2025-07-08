@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bf3xeyipvvfee"
+path="res://.godot/imported/Los aparatos el alfa el jefe saturado.mp3-7a345a0aec8d40f4e60ec16df64b403e.mp3str"
+
+[deps]
+
+source_file="res://sonidos/Musica/Los aparatos el alfa el jefe saturado.mp3"
+dest_files=["res://.godot/imported/Los aparatos el alfa el jefe saturado.mp3-7a345a0aec8d40f4e60ec16df64b403e.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

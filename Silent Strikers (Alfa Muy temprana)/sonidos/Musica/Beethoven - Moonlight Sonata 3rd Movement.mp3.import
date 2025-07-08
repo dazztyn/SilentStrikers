@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://b5e2bj1jqg3lp"
+path="res://.godot/imported/Beethoven - Moonlight Sonata 3rd Movement.mp3-1007db9c7628e71d204f34e8c941c831.mp3str"
+
+[deps]
+
+source_file="res://sonidos/Musica/Beethoven - Moonlight Sonata 3rd Movement.mp3"
+dest_files=["res://.godot/imported/Beethoven - Moonlight Sonata 3rd Movement.mp3-1007db9c7628e71d204f34e8c941c831.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

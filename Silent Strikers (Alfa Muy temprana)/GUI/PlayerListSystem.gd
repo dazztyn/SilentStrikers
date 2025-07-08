@@ -38,9 +38,68 @@ func _ready():
 	_ready_auto_refresh()
 	WebSocketManager.request_online_players()
 	
-	# ← CONECTAR NUEVAS SEÑALES
+	# CONECTAR TODAS LAS SEÑALES
 	WebSocketManager.match_request_canceled.connect(_on_match_request_canceled)
 	WebSocketManager.match_request_canceled_by_sender.connect(_on_match_request_canceled_by_sender)
+	WebSocketManager.match_rejected.connect(_on_match_rejected)
+
+func _on_match_rejected(data: Dictionary):
+	var player_id = data.get("playerId", "")
+	print("❌ Solicitud rechazada por jugador ID: ", player_id)
+	
+	# Encontrar el nombre del jugador para el mensaje
+	var player_name = "Jugador desconocido"
+	for player_data in current_players:
+		if player_data.get("id") == player_id:
+			player_name = player_data.get("name", "Jugador desconocido")
+			break
+	
+	# Notificar en el chat
+	var chat_system = get_node_or_null("../ChatSystem")
+	if chat_system:
+		chat_system.add_chat_message("Sistema", "❌ " + player_name + " ha rechazado tu solicitud de partida")
+	
+	# ← ACTUALIZAR BOTÓN ESPECÍFICO INMEDIATAMENTE
+	_update_player_buttons(player_id)
+	
+	# Actualizar la lista para cambiar el botón de cancelar a desafiar
+	call_deferred("request_online_players")
+
+func _update_player_buttons(player_id: String):
+	var player_item = player_items.get(player_id)
+	if not player_item:
+		return
+	
+	var action_container = player_item.get_node_or_null("ActionContainer")
+	if not action_container:
+		return
+	
+	# Buscar y remover botón de cancelar si existe
+	var cancel_button = action_container.get_node_or_null("CancelButton")
+	if cancel_button:
+		cancel_button.queue_free()
+	
+	# Buscar datos del jugador
+	var player_data = null
+	for data in current_players:
+		if data.get("id") == player_id:
+			player_data = data
+			break
+	
+	if not player_data:
+		return
+	
+	# Solo agregar botón de desafío si el jugador está disponible
+	if player_data.get("status") == "AVAILABLE":
+		var challenge_button = Button.new()
+		challenge_button.text = "⚔️"
+		challenge_button.custom_minimum_size = Vector2(25 * size_multiplier, 25 * size_multiplier)
+		challenge_button.add_theme_font_size_override("font_size", int(12 * size_multiplier))
+		challenge_button.pressed.connect(_on_challenge_player.bind(player_data))
+		challenge_button.name = "ChallengeButton"
+		action_container.add_child(challenge_button)
+		
+		print("✅ Botón de desafío restaurado para: ", player_data.get("name"))
 
 func create_player_list_ui():
 	print("👥 Creando UI de lista de jugadores...")
@@ -388,7 +447,7 @@ func create_player_item(player_data: Dictionary):
 		chat_button.name = "ChatButton"
 		action_container.add_child(chat_button)
 		
-		# ← VERIFICAR SI TENGO SOLICITUD PENDIENTE A ESTE JUGADOR
+		# VERIFICAR SI TENGO SOLICITUD PENDIENTE A ESTE JUGADOR
 		if WebSocketManager.has_pending_request_to(player_id):
 			# Mostrar botón de cancelar en lugar de desafiar
 			var cancel_button = Button.new()
@@ -426,7 +485,6 @@ func _on_private_chat_button(player_data: Dictionary):
 	if chat_system:
 		chat_system.add_chat_message("Sistema", "💬 Chat privado iniciado con " + player_name)
 
-# ← NUEVA FUNCIÓN PARA CANCELAR SOLICITUDES
 func _on_cancel_match_request(player_data: Dictionary):
 	var player_name = player_data.get("name", "")
 	var player_id = player_data.get("id", "")
@@ -456,7 +514,7 @@ func _on_challenge_player(player_data: Dictionary):
 	var player_id = player_data.get("id", "")
 	print("⚔️ Desafiando a jugador: ", player_name)
 	
-	# ← ENVIAR SOLICITUD CON NOMBRE PARA TRACKING
+	# ENVIAR SOLICITUD CON NOMBRE PARA TRACKING
 	WebSocketManager.send_match_request(player_id, player_name)
 	
 	# Notificar en chat
@@ -468,7 +526,6 @@ func _on_challenge_player(player_data: Dictionary):
 	print("🔄 Actualizando lista después de enviar desafío...")
 	call_deferred("request_online_players")
 
-# ← NUEVAS FUNCIONES PARA MANEJAR CANCELACIONES
 func _on_match_request_canceled(player_id: String):
 	print("✅ Solicitud cancelada exitosamente")
 	
@@ -483,10 +540,8 @@ func _on_match_request_canceled(player_id: String):
 func _on_match_request_canceled_by_sender(player_name: String, player_id: String):
 	print("🚫 Solicitud cancelada por: ", player_name)
 	
-	# Ocultar la solicitud si estaba visible
 	hide_match_request(player_id)
 	
-	# Notificar en el chat
 	var chat_system = get_node_or_null("../ChatSystem")
 	if chat_system:
 		chat_system.add_chat_message("Sistema", "🚫 " + player_name + " canceló su solicitud de partida")

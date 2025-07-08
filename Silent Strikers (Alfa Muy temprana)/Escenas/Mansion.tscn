@@ -1,4 +1,4 @@
-[gd_scene load_steps=54 format=4 uid="uid://d4lyib7n06dms"]
+[gd_scene load_steps=55 format=4 uid="uid://d4lyib7n06dms"]
 
 [ext_resource type="Texture2D" uid="uid://brmwx5ulu8t76" path="res://assets/Tiles mapas/tileset-mapa1-brillo.png" id="1_vqv8r"]
 [ext_resource type="Texture2D" uid="uid://cuecitndoyo4b" path="res://assets/Tiles mapas/Experimental.png" id="2_cn7dx"]
@@ -23,6 +23,7 @@
 [ext_resource type="Script" uid="uid://bup3aefmj2dhp" path="res://Codigos/tp2.gd" id="21_nofbg"]
 [ext_resource type="PackedScene" uid="uid://bqngjaxqklbf" path="res://Codigos/Potenciadores/speed_potion.tscn" id="22_sd6ds"]
 [ext_resource type="PackedScene" uid="uid://deiwkfa3o8irb" path="res://Codigos/Potenciadores/invisibility_potion.tscn" id="23_6q0rs"]
+[ext_resource type="AudioStream" uid="uid://bi83ax5ujoomf" path="res://sonidos/Musica/Mission Impossible Theme (Full Theme).mp3" id="24_sd6ds"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_qdyep"]
 vertices = PackedVector2Array(23, 23, -23, 23, -23, -23, 23, -23)
@@ -5231,3 +5232,27 @@ position = Vector2(306, 3759)
 
 [node name="Ubi7" type="Node2D" parent="ItemSpawner2"]
 position = Vector2(267, 2580)
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+position = Vector2(1212, 703)
+stream = ExtResource("24_sd6ds")
+volume_db = -30.0
+autoplay = true
+
+[node name="AudioStreamPlayer2D3" type="AudioStreamPlayer2D" parent="."]
+position = Vector2(573, 3155)
+stream = ExtResource("24_sd6ds")
+volume_db = -30.0
+autoplay = true
+
+[node name="AudioStreamPlayer2D4" type="AudioStreamPlayer2D" parent="."]
+position = Vector2(2618, 3133)
+stream = ExtResource("24_sd6ds")
+volume_db = -30.0
+autoplay = true
+
+[node name="AudioStreamPlayer2D2" type="AudioStreamPlayer2D" parent="."]
+position = Vector2(2537, -315)
+stream = ExtResource("24_sd6ds")
+volume_db = -30.0
+autoplay = true

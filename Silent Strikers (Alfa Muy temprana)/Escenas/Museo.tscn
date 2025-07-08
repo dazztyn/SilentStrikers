@@ -1,4 +1,4 @@
-[gd_scene load_steps=55 format=4 uid="uid://dbicubno0126o"]
+[gd_scene load_steps=57 format=4 uid="uid://dbicubno0126o"]
 
 [ext_resource type="Texture2D" uid="uid://d1ugwl33ka3du" path="res://assets/Tiles mapas/tileset2.png" id="1_my4lf"]
 [ext_resource type="PackedScene" uid="uid://drs5cxv35r63x" path="res://Escenas/Player.tscn" id="1_n87ba"]
@@ -30,6 +30,8 @@
 [ext_resource type="PackedScene" uid="uid://dm0spd0ho6h4o" path="res://Codigos/Potenciadores/CollectableItem.tscn" id="28_q4r8g"]
 [ext_resource type="PackedScene" uid="uid://bqngjaxqklbf" path="res://Codigos/Potenciadores/speed_potion.tscn" id="29_0tfnx"]
 [ext_resource type="PackedScene" uid="uid://deiwkfa3o8irb" path="res://Codigos/Potenciadores/invisibility_potion.tscn" id="30_smsy2"]
+[ext_resource type="AudioStream" uid="uid://b5e2bj1jqg3lp" path="res://sonidos/Musica/Beethoven - Moonlight Sonata 3rd Movement.mp3" id="31_0tfnx"]
+[ext_resource type="AudioStream" uid="uid://bf3xeyipvvfee" path="res://sonidos/Musica/Los aparatos el alfa el jefe saturado.mp3" id="32_smsy2"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_n87ba"]
 texture = ExtResource("1_my4lf")
@@ -2586,3 +2588,34 @@ position = Vector2(2415, -2563)
 
 [node name="Ubi13" type="Node2D" parent="DualItemSpawner"]
 position = Vector2(3404, -2550)
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+position = Vector2(2788, -256)
+stream = ExtResource("31_0tfnx")
+volume_db = -20.0
+autoplay = true
+
+[node name="AudioStreamPlayer2D2" type="AudioStreamPlayer2D" parent="."]
+position = Vector2(2995, 1586)
+stream = ExtResource("31_0tfnx")
+volume_db = -20.0
+autoplay = true
+
+[node name="AudioStreamPlayer2D3" type="AudioStreamPlayer2D" parent="."]
+position = Vector2(7181, 1586)
+stream = ExtResource("31_0tfnx")
+volume_db = -20.0
+autoplay = true
+
+[node name="AudioStreamPlayer2D4" type="AudioStreamPlayer2D" parent="."]
+position = Vector2(7683, -1921)
+stream = ExtResource("31_0tfnx")
+volume_db = -20.0
+autoplay = true
+
+[node name="AudioStreamPlayer2D5" type="AudioStreamPlayer2D" parent="."]
+position = Vector2(2926, -2314)
+stream = ExtResource("32_smsy2")
+volume_db = -30.0
+autoplay = true
+parameters/looping = true
