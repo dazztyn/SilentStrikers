@@ -4914,7 +4914,6 @@ position = Vector2(615, 242)
 navigation_region = NodePath("../PatrullaGuardia_1")
 
 [node name="PatrullaGuardia_1" type="NavigationRegion2D" parent="."]
-visible = false
 position = Vector2(1, 14)
 navigation_polygon = SubResource("NavigationPolygon_11dg0")
 
@@ -4923,7 +4922,6 @@ position = Vector2(2223, 273)
 navigation_region = NodePath("../PatrullaGuardia_2")
 
 [node name="PatrullaGuardia_2" type="NavigationRegion2D" parent="."]
-visible = false
 navigation_polygon = SubResource("NavigationPolygon_cn7dx")
 
 [node name="Camara" parent="." node_paths=PackedStringArray("player") instance=ExtResource("6_11dg0")]
