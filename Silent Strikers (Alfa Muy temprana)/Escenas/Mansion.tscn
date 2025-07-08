@@ -5140,3 +5140,5 @@ speed_potion_scene = ExtResource("22_sd6ds")
 invisibility_potion_scene = ExtResource("23_6q0rs")
 min_spawn_time = 0.1
 max_spawn_time = 1.0
+collectable_spawn_chance = 0
+potion_spawn_chance = 100
