@@ -2240,7 +2240,7 @@ position = Vector2(266, 252)
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2(-6, 3)
-zoom = Vector2(2, 2)
+zoom = Vector2(0.4, 0.4)
 
 [node name="Tiles" type="Node2D" parent="."]
 
@@ -2269,7 +2269,6 @@ tile_set = SubResource("TileSet_sf624")
 navigation_enabled = false
 
 [node name="HUD" type="CanvasLayer" parent="."]
-visible = false
 script = ExtResource("16_ua2ai")
 
 [node name="Mascara gris" type="ColorRect" parent="HUD"]
@@ -2396,7 +2395,7 @@ offset_bottom = 723.0
 [node name="SubViewport" type="SubViewport" parent="HUD/Minimapa"]
 handle_input_locally = false
 size = Vector2i(300, 300)
-render_target_update_mode = 0
+render_target_update_mode = 4
 script = ExtResource("18_shtlw")
 
 [node name="Camera2D" type="Camera2D" parent="HUD/Minimapa/SubViewport"]
@@ -2434,6 +2433,7 @@ tile_set = SubResource("TileSet_sf624")
 navigation_enabled = false
 
 [node name="Node2D" type="Node2D" parent="HUD/Minimapa/SubViewport"]
+z_index = 1
 script = ExtResource("19_fju71")
 
 [node name="jugador_icono" type="Sprite2D" parent="HUD/Minimapa/SubViewport/Node2D"]

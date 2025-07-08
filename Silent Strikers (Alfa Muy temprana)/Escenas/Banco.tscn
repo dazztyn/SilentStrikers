@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=4 uid="uid://dl2c808di5er1"]
+[gd_scene load_steps=30 format=4 uid="uid://dl2c808di5er1"]
 
 [ext_resource type="Texture2D" uid="uid://bd32yf8lfvp0e" path="res://assets/Tiles mapas/Interiors_free_48x48.png" id="1_kgjmw"]
 [ext_resource type="Texture2D" uid="uid://cji12h6yd886u" path="res://assets/caja fuerte (1) (1).png" id="2_tpfsg"]
@@ -10,7 +10,6 @@
 [ext_resource type="PackedScene" uid="uid://d1ouhuslclwme" path="res://Escenas/Guardia.tscn" id="7_21210"]
 [ext_resource type="PackedScene" uid="uid://cwbr2i4lpl8yd" path="res://Escenas/camara.tscn" id="7_r0jbp"]
 [ext_resource type="PackedScene" uid="uid://b2d1lacrstmpj" path="res://Escenas/item.tscn" id="9_u4h40"]
-[ext_resource type="PackedScene" uid="uid://jyu2vbo07tku" path="res://Escenas/potenciador.tscn" id="10_lcx23"]
 [ext_resource type="Script" uid="uid://deyufbfcfeppo" path="res://Codigos/canvas_layer.gd" id="11_860fa"]
 [ext_resource type="Script" uid="uid://cf38ppbm0nchk" path="res://Codigos/sub_viewport.gd" id="12_7upgu"]
 [ext_resource type="Script" uid="uid://bmb10fy424788" path="res://Codigos/node_2d.gd" id="15_deglr"]
@@ -1680,12 +1679,6 @@ z_index = 1
 position = Vector2(3575, 64)
 scale = Vector2(0.2, 0.2)
 collision_layer = 3
-collision_mask = 3
-
-[node name="potenciador" parent="." instance=ExtResource("10_lcx23")]
-position = Vector2(839, 79)
-scale = Vector2(0.3, 0.3)
-collision_layer = 2
 collision_mask = 3
 
 [node name="HUD" type="CanvasLayer" parent="."]

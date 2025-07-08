@@ -1,4 +1,4 @@
-[gd_scene load_steps=52 format=4 uid="uid://d4lyib7n06dms"]
+[gd_scene load_steps=54 format=4 uid="uid://d4lyib7n06dms"]
 
 [ext_resource type="Texture2D" uid="uid://brmwx5ulu8t76" path="res://assets/Tiles mapas/tileset-mapa1-brillo.png" id="1_vqv8r"]
 [ext_resource type="Texture2D" uid="uid://cuecitndoyo4b" path="res://assets/Tiles mapas/Experimental.png" id="2_cn7dx"]
@@ -18,11 +18,11 @@
 [ext_resource type="Texture2D" uid="uid://3v2beybe0ji6" path="res://assets/Sprites/UIs/vida_perdida.png" id="15_e5jov"]
 [ext_resource type="Texture2D" uid="uid://cupu8hi6ix3lq" path="res://assets/Sprites/UIs/vida.png" id="16_8kqfa"]
 [ext_resource type="PackedScene" uid="uid://c4thuj5ju7mw3" path="res://Escenas/TP.tscn" id="20_5hwbx"]
-[ext_resource type="Script" uid="uid://c4p4olvvgb1sl" path="res://Codigos/Potenciadores/dual_item_spawner.gd" id="20_nofbg"]
+[ext_resource type="Script" path="res://Codigos/Potenciadores/dual_item_spawner.gd" id="20_nofbg"]
 [ext_resource type="PackedScene" uid="uid://dm0spd0ho6h4o" path="res://Codigos/Potenciadores/CollectableItem.tscn" id="21_2y381"]
 [ext_resource type="Script" uid="uid://bup3aefmj2dhp" path="res://Codigos/tp2.gd" id="21_nofbg"]
-[ext_resource type="PackedScene" uid="uid://bqngjaxqklbf" path="res://Codigos/Potenciadores/speed_potion.tscn" id="22_sd6ds"]
-[ext_resource type="PackedScene" uid="uid://deiwkfa3o8irb" path="res://Codigos/Potenciadores/invisibility_potion.tscn" id="23_6q0rs"]
+[ext_resource type="PackedScene" uid="uid://cl88n8ievs7in" path="res://Codigos/Potenciadores/speed_potion.tscn" id="22_sd6ds"]
+[ext_resource type="PackedScene" uid="uid://bh0g6pw6ph2ic" path="res://Codigos/Potenciadores/invisibility_potion.tscn" id="23_6q0rs"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_qdyep"]
 vertices = PackedVector2Array(23, 23, -23, 23, -23, -23, 23, -23)
@@ -4855,6 +4855,16 @@ polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2), PackedInt32Array(
 outlines = Array[PackedVector2Array]([PackedVector2Array(-1996, 746, -1913, 969, -1691, 1157, -593, 1157, -556, 1547, -82, 1547, -36, 1072, -1530, 1066, -1514, 758, -101, 758, -93, 635, -380, 649, -364, 426, -232, 406, -247, 329, -365, 310, -374, 205, -465, 201, -608, 191, -446, 419, -458, 644, -1205, 641, -1181, 429, -987, 409, -870, 232, -1250, 233, -1277, 654, -1522, 644, -1525, 293, -1993, 284)])
 agent_radius = 33.0
 
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_2y381"]
+vertices = PackedVector2Array(366.703, 3719.63, 385.398, 3850.54, -6.92969, 3835.38, -5.92969, 3696.14, -0.867188, 3628.8, -3.13281, 3473.05, -82.7891, 3464.08, -80.2266, 3347.81, 447.5, 3390.27, 452.672, 3484.28, 405.781, 3510.23, 410.359, 3634, 472.773, 3634, 471.188, 3703.4, -79.8828, 3638.79, -79.1172, 3695.13)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3, 4), PackedInt32Array(5, 6, 7, 8, 9, 10), PackedInt32Array(4, 5, 10, 11, 0), PackedInt32Array(11, 12, 13, 0), PackedInt32Array(14, 4, 3, 15)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(-90, 3337, -93, 3473, -13, 3482, -11, 3620, -90, 3630, -89, 3705, -16, 3706, -17, 3845, 397, 3861, 378, 3728, 481, 3712, 483, 3624, 420, 3624, 416, 3516, 463, 3490, 457, 3381)])
+
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_omue6"]
+vertices = PackedVector2Array(3312.3, 3758.32, 3319.19, 3845.25, 2821.6, 3857.05, 2853.06, 3839.23, 3271.47, 3715.39, 2830.22, 3707.64, 2785.82, 3671.07, 2864.13, 3607.87, 3280.23, 3494.89, 3291.7, 3608.47, 3275.76, 3703.72, 2271.74, 3433, 1909.87, 3434.95, 1899.27, 3346.1, 2781.57, 3353.89, 2559.38, 3419.97, 2751.76, 3443.26, 2776.52, 3391.26, 3365.51, 3378.23, 3361.33, 3469.55, 2835.67, 3481.99, 3349.34, 3695.87, 3359.77, 3630.83)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3, 4), PackedInt32Array(4, 5, 6, 7, 8, 9, 10), PackedInt32Array(11, 12, 13, 14, 15), PackedInt32Array(16, 15, 14, 17), PackedInt32Array(4, 3, 5), PackedInt32Array(17, 18, 19, 8, 20, 16), PackedInt32Array(7, 20, 8), PackedInt32Array(21, 10, 9, 22)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(1888, 3336, 2793, 3344, 2788, 3381, 3376, 3368, 3371, 3477, 3291, 3502, 3301, 3601, 3371, 3624, 3358, 3705, 3283, 3713, 3322, 3754, 3330, 3855, 2782, 3868, 2842, 3834, 2821, 3713, 2770, 3671, 2853, 3604, 2827, 3489, 2749, 3453, 2559, 3430, 2272, 3443, 1901, 3445)])
+
 [node name="TestMapa1" type="Node2D"]
 
 [node name="Piso 2" type="TileMapLayer" parent="."]
@@ -4904,12 +4914,11 @@ navigation_region = NodePath("../PatrullaGuardia_4")
 
 [node name="Guardia_5" parent="." node_paths=PackedStringArray("navigation_region") instance=ExtResource("6_mhhoc")]
 z_index = 1
-position = Vector2(2510, 3493)
+position = Vector2(1606, 3924)
 navigation_region = NodePath("../PatrullaGuardia_5")
 
 [node name="Guardia_6" parent="." node_paths=PackedStringArray("navigation_region") instance=ExtResource("6_mhhoc")]
-visible = false
-position = Vector2(203, 3726)
+position = Vector2(1682, 2986)
 navigation_region = NodePath("../PatrullaGuardia_6")
 
 [node name="Guardia_1" parent="." node_paths=PackedStringArray("navigation_region") instance=ExtResource("6_mhhoc")]
@@ -4943,10 +4952,10 @@ navigation_polygon = SubResource("NavigationPolygon_mhhoc")
 script = ExtResource("5_noela")
 
 [node name="Mascara gris" type="ColorRect" parent="HUD"]
-offset_left = -982.0
-offset_top = -938.0
-offset_right = 4584.0
-offset_bottom = 4827.0
+offset_left = -957.0
+offset_top = -942.0
+offset_right = 4609.0
+offset_bottom = 4823.0
 color = Color(0.109804, 0.109804, 0.109804, 0.392157)
 
 [node name="Puntaje" type="Label" parent="HUD"]
@@ -5140,5 +5149,33 @@ speed_potion_scene = ExtResource("22_sd6ds")
 invisibility_potion_scene = ExtResource("23_6q0rs")
 min_spawn_time = 0.1
 max_spawn_time = 1.0
-collectable_spawn_chance = 0
-potion_spawn_chance = 100
+collectable_spawn_chance = 80
+potion_spawn_chance = 20
+
+[node name="Guardia_7" parent="." node_paths=PackedStringArray("navigation_region") instance=ExtResource("6_mhhoc")]
+position = Vector2(122, 3692)
+navigation_region = NodePath("../PatrullaGuardia_7")
+
+[node name="PatrullaGuardia_7" type="NavigationRegion2D" parent="."]
+position = Vector2(1, 14)
+navigation_polygon = SubResource("NavigationPolygon_2y381")
+
+[node name="Camara3" parent="." node_paths=PackedStringArray("player") instance=ExtResource("6_11dg0")]
+position = Vector2(31, 2978)
+player = NodePath("../Player")
+
+[node name="Camara4" parent="." node_paths=PackedStringArray("player") instance=ExtResource("6_11dg0")]
+position = Vector2(1357, 3288)
+player = NodePath("../Player")
+
+[node name="Camara2" parent="." node_paths=PackedStringArray("player") instance=ExtResource("6_11dg0")]
+position = Vector2(2088, 2601)
+player = NodePath("../Player")
+
+[node name="Guardia_8" parent="." node_paths=PackedStringArray("navigation_region") instance=ExtResource("6_mhhoc")]
+position = Vector2(3161, 3716)
+navigation_region = NodePath("../PatrullaGuardia_7")
+
+[node name="PatrullaGuardia_8" type="NavigationRegion2D" parent="."]
+position = Vector2(1, 14)
+navigation_polygon = SubResource("NavigationPolygon_omue6")
