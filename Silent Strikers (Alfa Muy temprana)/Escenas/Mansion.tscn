@@ -4980,10 +4980,8 @@ spawn_points = [NodePath("Ubi"), NodePath("Ubi8"), NodePath("Ubi7"), NodePath("U
 collectable_scene = ExtResource("21_2y381")
 speed_potion_scene = ExtResource("22_sd6ds")
 invisibility_potion_scene = ExtResource("23_6q0rs")
-min_spawn_time = 0.1
-max_spawn_time = 1.0
+min_spawn_time = 5.0
 max_collectables = 2
-max_potions = 1
 collectable_spawn_chance = 80
 potion_spawn_chance = 20
 
@@ -5209,8 +5207,9 @@ spawn_points = [NodePath("Ubi"), NodePath("Ubi2"), NodePath("Ubi3"), NodePath("U
 collectable_scene = ExtResource("21_2y381")
 speed_potion_scene = ExtResource("22_sd6ds")
 invisibility_potion_scene = ExtResource("23_6q0rs")
+min_spawn_time = 5.0
+max_spawn_time = 10.0
 max_collectables = 2
-max_potions = 1
 
 [node name="Ubi" type="Node2D" parent="ItemSpawner2"]
 position = Vector2(1618, 4104)

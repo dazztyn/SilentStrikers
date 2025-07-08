@@ -231,13 +231,13 @@ func _physics_process(delta: float):
 
 	match current_state:
 		State.PATROLLING:
-			speed = 200
+			speed = 400
 			_process_patrolling(delta)
 		State.CHASING:
-			speed = 300
+			speed = 550
 			_process_chasing(delta)
 		State.SEARCHING:
-			speed = 200
+			speed = 500
 			_process_searching(delta)
 	
 	if player_in_vision_cone:
