@@ -1,4 +1,4 @@
-# Script base para todos los items
+# Script base para todos los items (versión mejorada)
 extends Area2D
 class_name BaseItem
 
@@ -12,6 +12,7 @@ signal item_collected(item: BaseItem)
 
 var player_in_range: bool = false
 var is_collected: bool = false
+var interaction_label: Label
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
@@ -30,6 +31,21 @@ func _ready():
 	# Configurar audio
 	if collection_sound and audio_player:
 		audio_player.stream = collection_sound
+	
+	# Crear indicador de interacción
+	create_interaction_indicator()
+
+func create_interaction_indicator():
+	interaction_label = Label.new()
+	interaction_label.text = "Presiona E"
+	interaction_label.add_theme_color_override("font_color", Color.WHITE)
+	interaction_label.add_theme_color_override("font_shadow_color", Color.BLACK)
+	interaction_label.add_theme_constant_override("shadow_offset_x", 2)
+	interaction_label.add_theme_constant_override("shadow_offset_y", 2)
+	interaction_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	interaction_label.position = Vector2(-25, -60)  # Posición arriba del item
+	interaction_label.visible = false
+	add_child(interaction_label)
 
 func _on_body_entered(body: Node2D):
 	if body.name == "Player":
@@ -42,6 +58,7 @@ func _on_body_exited(body: Node2D):
 		hide_interaction_hint()
 
 func _process(delta):
+	# Lógica de interacción con la tecla E
 	if player_in_range and Input.is_action_just_pressed("interactuar") and not is_collected:
 		collect_item()
 
@@ -65,7 +82,6 @@ func collect_item():
 	create_collection_animation()
 
 func apply_effect():
-	# Función virtual que debe ser sobrescrita por las clases hijas
 	print("Efecto base aplicado: ", item_name)
 
 func create_collection_animation():
@@ -75,8 +91,18 @@ func create_collection_animation():
 	tween.tween_callback(queue_free)
 
 func show_interaction_hint():
-	# Opcional: mostrar indicador de interacción
+	# Cambiar color para indicar que se puede interactuar
 	modulate = Color.YELLOW
+	
+	# Mostrar texto de interacción
+	if interaction_label:
+		interaction_label.visible = true
+	
+	print("Presiona E para recoger: ", item_name)
 
 func hide_interaction_hint():
 	modulate = Color.WHITE
+	
+	# Ocultar texto de interacción
+	if interaction_label:
+		interaction_label.visible = false

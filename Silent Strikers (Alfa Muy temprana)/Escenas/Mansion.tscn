@@ -1,4 +1,4 @@
-[gd_scene load_steps=50 format=4 uid="uid://d4lyib7n06dms"]
+[gd_scene load_steps=49 format=4 uid="uid://d4lyib7n06dms"]
 
 [ext_resource type="Texture2D" uid="uid://brmwx5ulu8t76" path="res://assets/Tiles mapas/tileset-mapa1-brillo.png" id="1_vqv8r"]
 [ext_resource type="Texture2D" uid="uid://cuecitndoyo4b" path="res://assets/Tiles mapas/Experimental.png" id="2_cn7dx"]
@@ -17,8 +17,7 @@
 [ext_resource type="Texture2D" uid="uid://c1d04k1ykdmrx" path="res://assets/Sprites/sprits de prueba/New Piskel (10).png" id="14_2y381"]
 [ext_resource type="Texture2D" uid="uid://3v2beybe0ji6" path="res://assets/Sprites/UIs/vida_perdida.png" id="15_e5jov"]
 [ext_resource type="Texture2D" uid="uid://cupu8hi6ix3lq" path="res://assets/Sprites/UIs/vida.png" id="16_8kqfa"]
-[ext_resource type="PackedScene" uid="uid://b2d1lacrstmpj" path="res://Escenas/item.tscn" id="16_k1w2r"]
-[ext_resource type="PackedScene" uid="uid://jyu2vbo07tku" path="res://Escenas/potenciador.tscn" id="17_5jo1w"]
+[ext_resource type="PackedScene" uid="uid://dwvordijgcipg" path="res://Codigos/Potenciadores/invisibility_potion.tscn" id="18_5hwbx"]
 [ext_resource type="PackedScene" uid="uid://c4thuj5ju7mw3" path="res://Escenas/TP.tscn" id="20_5hwbx"]
 [ext_resource type="Script" uid="uid://bup3aefmj2dhp" path="res://Codigos/tp2.gd" id="21_nofbg"]
 
@@ -4889,8 +4888,6 @@ tile_set = SubResource("TileSet_nurg1")
 
 [node name="Player" parent="." instance=ExtResource("4_mhhoc")]
 position = Vector2(104, 339)
-spawn_points_it = Array[NodePath]([NodePath("../Marker2D"), NodePath("../Marker2D2"), NodePath("../Marker2D3"), NodePath("../Marker2D4"), NodePath("../Marker2D5")])
-spawn_points_pd = Array[NodePath]([NodePath("../Marker2D6"), NodePath("../Marker2D7"), NodePath("../Marker2D8")])
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2(1, -1)
@@ -5099,42 +5096,6 @@ max_value = 1.0
 texture_under = ExtResource("15_e5jov")
 texture_progress = ExtResource("16_8kqfa")
 
-[node name="item" parent="." instance=ExtResource("16_k1w2r")]
-position = Vector2(111, 604)
-scale = Vector2(0.2, 0.2)
-collision_layer = 2
-collision_mask = 3
-
-[node name="Marker2D" type="Marker2D" parent="."]
-position = Vector2(26, 97)
-
-[node name="Marker2D2" type="Marker2D" parent="."]
-position = Vector2(617, 633)
-
-[node name="Marker2D3" type="Marker2D" parent="."]
-position = Vector2(601, 1088)
-
-[node name="Marker2D4" type="Marker2D" parent="."]
-position = Vector2(3237, 42)
-
-[node name="Marker2D5" type="Marker2D" parent="."]
-position = Vector2(1763, 563)
-
-[node name="Marker2D6" type="Marker2D" parent="."]
-position = Vector2(599, 594)
-
-[node name="potenciador" parent="." instance=ExtResource("17_5jo1w")]
-position = Vector2(464, 57)
-scale = Vector2(0.3, 0.3)
-collision_layer = 2
-collision_mask = 3
-
-[node name="Marker2D7" type="Marker2D" parent="."]
-position = Vector2(1534, -223)
-
-[node name="Marker2D8" type="Marker2D" parent="."]
-position = Vector2(2327, -211)
-
 [node name="PatrullaGuardia_4" type="NavigationRegion2D" parent="."]
 visible = false
 position = Vector2(499, 2304)
@@ -5150,40 +5111,8 @@ visible = false
 position = Vector2(3379, 2304)
 navigation_polygon = SubResource("NavigationPolygon_s3cwq")
 
-[node name="Marker2D9" type="Marker2D" parent="."]
-position = Vector2(49, 2999)
-
-[node name="Marker2D10" type="Marker2D" parent="."]
-position = Vector2(2492, 2580)
-
-[node name="Marker2D11" type="Marker2D" parent="."]
-position = Vector2(676, 2522)
-
-[node name="Marker2D12" type="Marker2D" parent="."]
-position = Vector2(2259, 2562)
-
-[node name="Marker2D13" type="Marker2D" parent="."]
-position = Vector2(-20, 3678)
-
-[node name="Marker2D14" type="Marker2D" parent="."]
-position = Vector2(1044, 3824)
-
-[node name="Marker2D15" type="Marker2D" parent="."]
-position = Vector2(3258, 3598)
-
-[node name="Marker2D16" type="Marker2D" parent="."]
-position = Vector2(3074, 2668)
-
-[node name="item2" parent="." instance=ExtResource("16_k1w2r")]
-position = Vector2(383, 2998)
-scale = Vector2(0.2, 0.2)
-collision_layer = 2
-collision_mask = 3
-
-[node name="potenciador2" parent="." instance=ExtResource("17_5jo1w")]
-position = Vector2(544, 2978)
-scale = Vector2(0.3, 0.3)
-collision_layer = 2
+[node name="InvisibilityPotion" parent="." instance=ExtResource("18_5hwbx")]
+collision_layer = 3
 collision_mask = 3
 
 [node name="Tp" parent="." instance=ExtResource("20_5hwbx")]
@@ -5192,3 +5121,6 @@ position = Vector2(1913, -371)
 [node name="Tp2" parent="." instance=ExtResource("20_5hwbx")]
 position = Vector2(1628, 2323)
 script = ExtResource("21_nofbg")
+
+[connection signal="body_entered" from="InvisibilityPotion" to="InvisibilityPotion" method="_on_body_entered"]
+[connection signal="body_exited" from="InvisibilityPotion" to="InvisibilityPotion" method="_on_body_exited"]
