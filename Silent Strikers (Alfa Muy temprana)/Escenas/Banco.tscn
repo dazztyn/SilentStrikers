@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=4 uid="uid://dl2c808di5er1"]
+[gd_scene load_steps=33 format=4 uid="uid://dl2c808di5er1"]
 
 [ext_resource type="Texture2D" uid="uid://bd32yf8lfvp0e" path="res://assets/Tiles mapas/Interiors_free_48x48.png" id="1_kgjmw"]
 [ext_resource type="Texture2D" uid="uid://cji12h6yd886u" path="res://assets/caja fuerte (1) (1).png" id="2_tpfsg"]
@@ -9,13 +9,12 @@
 [ext_resource type="Texture2D" uid="uid://bjddy0l26f2h5" path="res://assets/Sprites/UIs/marco_minimapa.png" id="7_5wh67"]
 [ext_resource type="PackedScene" uid="uid://d1ouhuslclwme" path="res://Escenas/Guardia.tscn" id="7_21210"]
 [ext_resource type="PackedScene" uid="uid://cwbr2i4lpl8yd" path="res://Escenas/camara.tscn" id="7_r0jbp"]
-[ext_resource type="PackedScene" uid="uid://b2d1lacrstmpj" path="res://Escenas/item.tscn" id="9_u4h40"]
 [ext_resource type="Script" uid="uid://deyufbfcfeppo" path="res://Codigos/canvas_layer.gd" id="11_860fa"]
 [ext_resource type="Script" uid="uid://cf38ppbm0nchk" path="res://Codigos/sub_viewport.gd" id="12_7upgu"]
 [ext_resource type="Script" uid="uid://bmb10fy424788" path="res://Codigos/node_2d.gd" id="15_deglr"]
-[ext_resource type="Texture2D" uid="uid://cq0m31wscfdjr" path="res://assets/icon.svg" id="16_bhaya"]
 [ext_resource type="Texture2D" uid="uid://3v2beybe0ji6" path="res://assets/Sprites/UIs/vida_perdida.png" id="16_tx37k"]
 [ext_resource type="Texture2D" uid="uid://cupu8hi6ix3lq" path="res://assets/Sprites/UIs/vida.png" id="17_860fa"]
+[ext_resource type="Texture2D" uid="uid://c1tdrw6p6hqh5" path="res://assets/Sprites/1. Protagonista/protag_v2.png" id="18_6h2d5"]
 [ext_resource type="Texture2D" uid="uid://b1rlteqk18guf" path="res://assets/Sprites/sprits de prueba/New Piskel (11).png" id="19_0jfhd"]
 [ext_resource type="Texture2D" uid="uid://nlpgntvqo06s" path="res://assets/Sprites/sprits de prueba/New Piskel (9).png" id="20_vcnbm"]
 [ext_resource type="Script" uid="uid://c4p4olvvgb1sl" path="res://Codigos/Potenciadores/dual_item_spawner.gd" id="21_6h2d5"]
@@ -1606,26 +1605,6 @@ player = NodePath("../Player")
 position = Vector2(4566, 548)
 player = NodePath("../Player")
 
-[node name="item" parent="." instance=ExtResource("9_u4h40")]
-position = Vector2(3369, 186)
-scale = Vector2(0.2, 0.2)
-collision_layer = 3
-collision_mask = 3
-
-[node name="item2" parent="." instance=ExtResource("9_u4h40")]
-z_index = 1
-position = Vector2(3330, 61)
-scale = Vector2(0.2, 0.2)
-collision_layer = 3
-collision_mask = 3
-
-[node name="item3" parent="." instance=ExtResource("9_u4h40")]
-z_index = 1
-position = Vector2(3575, 64)
-scale = Vector2(0.2, 0.2)
-collision_layer = 3
-collision_mask = 3
-
 [node name="HUD" type="CanvasLayer" parent="."]
 script = ExtResource("11_860fa")
 
@@ -1754,7 +1733,8 @@ zoom = Vector2(0.2, 0.2)
 script = ExtResource("15_deglr")
 
 [node name="jugador_icono" type="Sprite2D" parent="HUD/Minimapa/SubViewport/Node2D"]
-texture = ExtResource("16_bhaya")
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("18_6h2d5")
 
 [node name="Tiles" type="Node2D" parent="HUD/Minimapa/SubViewport"]
 z_index = -1

@@ -2268,6 +2268,90 @@ tile_map_data = PackedByteArray("AAAkAAMAAQAAAAAAAAAkAAQAAQAAAAEAAAAkAAUAAQAAAAI
 tile_set = SubResource("TileSet_sf624")
 navigation_enabled = false
 
+[node name="Guardia_1" parent="." node_paths=PackedStringArray("navigation_region") instance=ExtResource("26_ua2ai")]
+position = Vector2(1803, 769)
+collision_layer = 3
+navigation_region = NodePath("../PatrullaGuardia_1")
+search_radius = 50.0
+
+[node name="PatrullaGuardia_1" type="NavigationRegion2D" parent="."]
+visible = false
+position = Vector2(1328, -58)
+navigation_polygon = SubResource("NavigationPolygon_dh30r")
+
+[node name="Guardia_2" parent="." node_paths=PackedStringArray("navigation_region") instance=ExtResource("26_ua2ai")]
+position = Vector2(2322, 1968)
+navigation_region = NodePath("../PatrullaGuardia_2")
+
+[node name="PatrullaGuardia_2" type="NavigationRegion2D" parent="."]
+visible = false
+position = Vector2(-178, 1634)
+navigation_polygon = SubResource("NavigationPolygon_shtlw")
+
+[node name="Guardia_3" parent="." node_paths=PackedStringArray("navigation_region") instance=ExtResource("26_ua2ai")]
+position = Vector2(3746, 2089)
+navigation_region = NodePath("../PatrullaGuardia_3")
+search_radius = 300.0
+
+[node name="PatrullaGuardia_3" type="NavigationRegion2D" parent="."]
+visible = false
+position = Vector2(3373, 923)
+navigation_polygon = SubResource("NavigationPolygon_fju71")
+
+[node name="Guardia_4" parent="." node_paths=PackedStringArray("navigation_region") instance=ExtResource("26_ua2ai")]
+position = Vector2(5017, 247)
+navigation_region = NodePath("../PatrullaGuardia_4")
+
+[node name="PatrullaGuardia_4" type="NavigationRegion2D" parent="."]
+visible = false
+position = Vector2(2893, -876)
+navigation_polygon = SubResource("NavigationPolygon_ua2ai")
+
+[node name="Guardia_5" parent="." node_paths=PackedStringArray("navigation_region") instance=ExtResource("26_ua2ai")]
+position = Vector2(2371, -2197)
+navigation_region = NodePath("../PatrullaGuardia_5")
+
+[node name="PatrullaGuardia_5" type="NavigationRegion2D" parent="."]
+visible = false
+position = Vector2(2989, 628)
+navigation_polygon = SubResource("NavigationPolygon_qsi44")
+
+[node name="Guardia_6" parent="." node_paths=PackedStringArray("navigation_region") instance=ExtResource("26_ua2ai")]
+position = Vector2(2961, -1137)
+navigation_region = NodePath("../PatrullaGuardia_6")
+
+[node name="PatrullaGuardia_6" type="NavigationRegion2D" parent="."]
+visible = false
+position = Vector2(5950, -509)
+navigation_polygon = SubResource("NavigationPolygon_q4r8g")
+
+[node name="Guardia_7" parent="." node_paths=PackedStringArray("navigation_region") instance=ExtResource("26_ua2ai")]
+position = Vector2(6136, -2220)
+navigation_region = NodePath("../PatrullaGuardia_7")
+
+[node name="PatrullaGuardia_7" type="NavigationRegion2D" parent="."]
+visible = false
+position = Vector2(11900, -1018)
+navigation_polygon = SubResource("NavigationPolygon_0tfnx")
+
+[node name="Guardia_8" parent="." node_paths=PackedStringArray("navigation_region") instance=ExtResource("26_ua2ai")]
+position = Vector2(6150, 188)
+navigation_region = NodePath("../PatrullaGuardia_8")
+
+[node name="PatrullaGuardia_8" type="NavigationRegion2D" parent="."]
+visible = false
+position = Vector2(19945, -1401)
+navigation_polygon = SubResource("NavigationPolygon_smsy2")
+
+[node name="Guardia_9" parent="." node_paths=PackedStringArray("navigation_region") instance=ExtResource("26_ua2ai")]
+position = Vector2(8241, -61)
+navigation_region = NodePath("../PatrullaGuardia_9")
+
+[node name="PatrullaGuardia_9" type="NavigationRegion2D" parent="."]
+visible = false
+position = Vector2(39890, -2802)
+navigation_polygon = SubResource("NavigationPolygon_6c1rx")
+
 [node name="HUD" type="CanvasLayer" parent="."]
 script = ExtResource("16_ua2ai")
 
@@ -2398,15 +2482,9 @@ size = Vector2i(300, 300)
 render_target_update_mode = 4
 script = ExtResource("18_shtlw")
 
-[node name="Camera2D" type="Camera2D" parent="HUD/Minimapa/SubViewport"]
-position = Vector2(877, 293)
-zoom = Vector2(0.2, 0.2)
-
 [node name="Tiles" type="Node2D" parent="HUD/Minimapa/SubViewport"]
-z_index = -1
 
 [node name="suelo" type="TileMapLayer" parent="HUD/Minimapa/SubViewport/Tiles"]
-z_index = -1
 use_parent_material = true
 position = Vector2(1, 0)
 rotation = -0.00034989
@@ -2415,7 +2493,6 @@ tile_set = SubResource("TileSet_sf624")
 navigation_enabled = false
 
 [node name="decoracion" type="TileMapLayer" parent="HUD/Minimapa/SubViewport/Tiles"]
-z_index = -1
 use_parent_material = true
 position = Vector2(1, 0)
 rotation = -0.00034989
@@ -2424,7 +2501,6 @@ tile_set = SubResource("TileSet_sf624")
 navigation_enabled = false
 
 [node name="decoracion2Layer2" type="TileMapLayer" parent="HUD/Minimapa/SubViewport/Tiles"]
-z_index = -1
 use_parent_material = true
 position = Vector2(1, 0)
 rotation = -0.00034989
@@ -2432,97 +2508,19 @@ tile_map_data = PackedByteArray("AAAkAAMAAQAAAAAAAAAkAAQAAQAAAAEAAAAkAAUAAQAAAAI
 tile_set = SubResource("TileSet_sf624")
 navigation_enabled = false
 
+[node name="Camera2D" type="Camera2D" parent="HUD/Minimapa/SubViewport"]
+position = Vector2(877, 293)
+zoom = Vector2(0.2, 0.2)
+
 [node name="Node2D" type="Node2D" parent="HUD/Minimapa/SubViewport"]
-z_index = 1
+top_level = true
+light_mask = 3
+visibility_layer = 3
 script = ExtResource("19_fju71")
 
 [node name="jugador_icono" type="Sprite2D" parent="HUD/Minimapa/SubViewport/Node2D"]
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("25_dh30r")
-
-[node name="Guardia_1" parent="." node_paths=PackedStringArray("navigation_region") instance=ExtResource("26_ua2ai")]
-position = Vector2(1803, 769)
-collision_layer = 3
-navigation_region = NodePath("../PatrullaGuardia_1")
-search_radius = 50.0
-
-[node name="PatrullaGuardia_1" type="NavigationRegion2D" parent="."]
-visible = false
-position = Vector2(1328, -58)
-navigation_polygon = SubResource("NavigationPolygon_dh30r")
-
-[node name="Guardia_2" parent="." node_paths=PackedStringArray("navigation_region") instance=ExtResource("26_ua2ai")]
-position = Vector2(2322, 1968)
-navigation_region = NodePath("../PatrullaGuardia_2")
-
-[node name="PatrullaGuardia_2" type="NavigationRegion2D" parent="."]
-visible = false
-position = Vector2(-178, 1634)
-navigation_polygon = SubResource("NavigationPolygon_shtlw")
-
-[node name="Guardia_3" parent="." node_paths=PackedStringArray("navigation_region") instance=ExtResource("26_ua2ai")]
-position = Vector2(3746, 2089)
-navigation_region = NodePath("../PatrullaGuardia_3")
-search_radius = 300.0
-
-[node name="PatrullaGuardia_3" type="NavigationRegion2D" parent="."]
-visible = false
-position = Vector2(3373, 923)
-navigation_polygon = SubResource("NavigationPolygon_fju71")
-
-[node name="Guardia_4" parent="." node_paths=PackedStringArray("navigation_region") instance=ExtResource("26_ua2ai")]
-position = Vector2(5017, 247)
-navigation_region = NodePath("../PatrullaGuardia_4")
-
-[node name="PatrullaGuardia_4" type="NavigationRegion2D" parent="."]
-visible = false
-position = Vector2(2893, -876)
-navigation_polygon = SubResource("NavigationPolygon_ua2ai")
-
-[node name="Guardia_5" parent="." node_paths=PackedStringArray("navigation_region") instance=ExtResource("26_ua2ai")]
-position = Vector2(2371, -2197)
-navigation_region = NodePath("../PatrullaGuardia_5")
-
-[node name="PatrullaGuardia_5" type="NavigationRegion2D" parent="."]
-visible = false
-position = Vector2(2989, 628)
-navigation_polygon = SubResource("NavigationPolygon_qsi44")
-
-[node name="Guardia_6" parent="." node_paths=PackedStringArray("navigation_region") instance=ExtResource("26_ua2ai")]
-position = Vector2(2961, -1137)
-navigation_region = NodePath("../PatrullaGuardia_6")
-
-[node name="PatrullaGuardia_6" type="NavigationRegion2D" parent="."]
-visible = false
-position = Vector2(5950, -509)
-navigation_polygon = SubResource("NavigationPolygon_q4r8g")
-
-[node name="Guardia_7" parent="." node_paths=PackedStringArray("navigation_region") instance=ExtResource("26_ua2ai")]
-position = Vector2(6136, -2220)
-navigation_region = NodePath("../PatrullaGuardia_7")
-
-[node name="PatrullaGuardia_7" type="NavigationRegion2D" parent="."]
-visible = false
-position = Vector2(11900, -1018)
-navigation_polygon = SubResource("NavigationPolygon_0tfnx")
-
-[node name="Guardia_8" parent="." node_paths=PackedStringArray("navigation_region") instance=ExtResource("26_ua2ai")]
-position = Vector2(6150, 188)
-navigation_region = NodePath("../PatrullaGuardia_8")
-
-[node name="PatrullaGuardia_8" type="NavigationRegion2D" parent="."]
-visible = false
-position = Vector2(19945, -1401)
-navigation_polygon = SubResource("NavigationPolygon_smsy2")
-
-[node name="Guardia_9" parent="." node_paths=PackedStringArray("navigation_region") instance=ExtResource("26_ua2ai")]
-position = Vector2(8241, -61)
-navigation_region = NodePath("../PatrullaGuardia_9")
-
-[node name="PatrullaGuardia_9" type="NavigationRegion2D" parent="."]
-visible = false
-position = Vector2(39890, -2802)
-navigation_polygon = SubResource("NavigationPolygon_6c1rx")
 
 [node name="DualItemSpawner" type="Node2D" parent="." node_paths=PackedStringArray("spawn_points")]
 script = ExtResource("27_qsi44")
