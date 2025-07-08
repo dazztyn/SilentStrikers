@@ -1,30 +1,21 @@
-extends Area2D
+extends BaseItem
 
-var player_in_range = false
-@export var puntos = 200  # Cuántos puntos da este ítem
-@onready var jugador = Singleton.devolver_player()
+# Collectible item that gives points to the player
+# Now uses the new BaseItem system instead of texture-based logic
+
+@export var puntos = 200  # Kept for backward compatibility
 
 func _ready():
-	body_entered.connect(_on_body_entered)
-	body_exited.connect(_on_body_exited)
+	super._ready()
+	# Initialize points_value from puntos for backward compatibility
+	if puntos != 200:
+		points_value = puntos
 
-#Detecta si el Ladrón entro al rango
-func _on_body_entered(body):
-	if body.name == "Player":
-		player_in_range = true
+func collect():
+	if jugador:
+		jugador.aumentar_puntaje(points_value)
+		jugador.recoger()
 
-#Detecta si el Ladrón salió del rango
-func _on_body_exited(body):
-	if body.name == "Player":
-		player_in_range = false
-
-#Si el jugador esta en rango y presiona "interactuar", se recoge el item
-func _process(delta):
-	if player_in_range and Input.is_action_just_pressed("interactuar"):
-		recoger()
-		queue_free()
-
-#Llama a la funcion aumentar puntaje del ladron
+# Backward compatibility function
 func recoger():
-	jugador.aumentar_puntaje(puntos)
-	jugador.recoger()
+	collect()
