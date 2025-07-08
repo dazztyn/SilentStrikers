@@ -1577,30 +1577,39 @@ navigation_enabled = false
 [node name="spawns" type="Node" parent="."]
 
 [node name="Marker2D" type="Marker2D" parent="spawns"]
+z_index = 1
 position = Vector2(4139, 1976)
 
 [node name="Marker2D2" type="Marker2D" parent="spawns"]
+z_index = 1
 position = Vector2(1725, -1035)
 
 [node name="Marker2D3" type="Marker2D" parent="spawns"]
+z_index = 1
 position = Vector2(4003, -1891)
 
 [node name="Marker2D4" type="Marker2D" parent="spawns"]
+z_index = 1
 position = Vector2(4823, -1677)
 
 [node name="Marker2D5" type="Marker2D" parent="spawns"]
+z_index = 1
 position = Vector2(5030, -688)
 
 [node name="Marker2D6" type="Marker2D" parent="spawns"]
+z_index = 1
 position = Vector2(4791, 892)
 
 [node name="Marker2D7" type="Marker2D" parent="spawns"]
+z_index = 1
 position = Vector2(1254, 337)
 
 [node name="Marker2D8" type="Marker2D" parent="spawns"]
+z_index = 1
 position = Vector2(1924, 1138)
 
 [node name="Marker2D9" type="Marker2D" parent="spawns"]
+z_index = 1
 position = Vector2(4820, 1990)
 
 [node name="Player" parent="." instance=ExtResource("6_bhxpy")]
@@ -1608,7 +1617,7 @@ position = Vector2(560, 109)
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2(1, -1)
-zoom = Vector2(2, 2)
+zoom = Vector2(0.2, 0.2)
 
 [node name="Guardia_1" parent="." node_paths=PackedStringArray("navigation_region") instance=ExtResource("7_21210")]
 position = Vector2(2003, 1146)
@@ -1656,7 +1665,21 @@ player = NodePath("../Player")
 [node name="item" parent="." instance=ExtResource("9_u4h40")]
 position = Vector2(3369, 186)
 scale = Vector2(0.2, 0.2)
-collision_layer = 2
+collision_layer = 3
+collision_mask = 3
+
+[node name="item2" parent="." instance=ExtResource("9_u4h40")]
+z_index = 1
+position = Vector2(3330, 61)
+scale = Vector2(0.2, 0.2)
+collision_layer = 3
+collision_mask = 3
+
+[node name="item3" parent="." instance=ExtResource("9_u4h40")]
+z_index = 1
+position = Vector2(3575, 64)
+scale = Vector2(0.2, 0.2)
+collision_layer = 3
 collision_mask = 3
 
 [node name="potenciador" parent="." instance=ExtResource("10_lcx23")]

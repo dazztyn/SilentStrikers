@@ -69,7 +69,6 @@ func _ready():
 	generar_cono_de_vision()
 
 	if navigation_region == null:
-		print("[ERROR] ¡No se ha asignado un NavigationRegion2D al guardia!")
 		set_physics_process(false)
 		return
 	
@@ -80,7 +79,6 @@ func _ready():
 	
 	# Validar y cachear la configuración de navegación
 	if not _validate_navigation_setup():
-		print("[ERROR] La configuración de navegación no es válida!")
 		set_physics_process(false)
 		return
 	
@@ -96,23 +94,19 @@ func _ready():
 
 func _validate_navigation_setup() -> bool:
 	if navigation_region == null:
-		print("[ERROR] NavigationRegion2D es null")
 		return false
 	
 	if navigation_region.navigation_polygon == null:
-		print("[ERROR] NavigationPolygon es null")
 		return false
 	
 	var nav_poly = navigation_region.navigation_polygon
 	if nav_poly.get_outline_count() == 0:
-		print("[ERROR] NavigationPolygon no tiene contornos")
 		return false
 	
 	# Cachear polígonos y bounds
 	cached_nav_polygons.clear()
 	var first_outline = nav_poly.get_outline(0)
 	if first_outline.is_empty():
-		print("[ERROR] El primer contorno está vacío")
 		return false
 	
 	cached_nav_bounds = Rect2(first_outline[0], Vector2.ZERO)
@@ -126,7 +120,6 @@ func _validate_navigation_setup() -> bool:
 			cached_nav_bounds = cached_nav_bounds.expand(point)
 	
 	nav_cache_valid = true
-	print("[INFO] Navegación configurada correctamente. Bounds: ", cached_nav_bounds)
 	
 	return true
 
@@ -157,12 +150,10 @@ func _generate_patrol_points():
 	# Añadir algunos puntos aleatorios para más variedad
 	_add_random_points(nav_region_pos, 5)
 	
-	print("[INFO] Puntos de patrulla generados: ", patrol_points.size())
 	
 	# Filtrar puntos demasiado cercanos entre sí
 	_filter_close_points()
 	
-	print("[INFO] Puntos de patrulla después del filtro: ", patrol_points.size())
 
 func _add_strategic_points(nav_region_pos: Vector2):
 	var strategic_positions = [
@@ -290,10 +281,8 @@ func _check_stuck_state(delta):
 		
 		if distance_moved < stuck_threshold and current_state == State.PATROLLING:
 			stuck_counter += 1
-			print("[WARNING] Guardia posiblemente atascado. Movimiento: ", distance_moved, " Contador: ", stuck_counter)
 			
 			if stuck_counter >= max_stuck_attempts:
-				print("[INFO] Guardia atascado detectado, aplicando corrección")
 				_unstuck_guard()
 				stuck_counter = 0
 		else:
@@ -307,7 +296,6 @@ func _unstuck_guard():
 	if far_points.size() > 0:
 		var random_point = far_points[randi() % far_points.size()]
 		navigation_agent.target_position = random_point
-		print("[INFO] Saltando a punto lejano: ", random_point)
 		is_waiting_at_patrol_point = false
 		return
 	
@@ -315,7 +303,6 @@ func _unstuck_guard():
 	var random_direction = Vector2.RIGHT.rotated(randf_range(0, TAU))
 	var escape_point = global_position + random_direction * preferred_patrol_distance
 	navigation_agent.target_position = escape_point
-	print("[INFO] Movimiento de escape a: ", escape_point)
 	
 	velocity = random_direction * speed * 0.5
 	force_movement_timer = 1.0
@@ -384,7 +371,6 @@ func _update_navigation_velocity(delta):
 
 func _set_next_patrol_point():
 	if patrol_points.is_empty():
-		print("[ERROR] No hay puntos de patrulla disponibles")
 		return
 	
 	var current_pos = global_position
@@ -421,7 +407,6 @@ func _set_next_patrol_point():
 	# Si no hay candidatos válidos, limpiar historial y intentar de nuevo
 	if valid_candidates.is_empty():
 		last_visited_points.clear()
-		print("[INFO] Limpiando historial de puntos visitados")
 		
 		# Buscar cualquier punto que esté en el rango mínimo
 		for i in range(patrol_points.size()):
@@ -437,7 +422,6 @@ func _set_next_patrol_point():
 				})
 	
 	if valid_candidates.is_empty():
-		print("[WARNING] No se encontraron puntos válidos, usando punto más lejano")
 		_use_farthest_point()
 		return
 	
@@ -457,7 +441,6 @@ func _set_next_patrol_point():
 	navigation_agent.target_position = selected.point
 	current_patrol_index = selected.index
 	
-	print("[INFO] Nuevo punto de patrulla: ", selected.point, " Distancia: ", selected.distance, " Puntuación: ", selected.score)
 
 func _use_farthest_point():
 	var farthest_point = patrol_points[0]
@@ -473,10 +456,8 @@ func _use_farthest_point():
 	
 	navigation_agent.target_position = farthest_point
 	current_patrol_index = farthest_index
-	print("[INFO] Usando punto más lejano: ", farthest_point, " Distancia: ", max_distance)
 
 func _on_player_detected():
-	print("¡Jugador DETECTADO!")
 	set_state(State.CHASING)
 	chasing_timer = chase_duration
 	search_timer = 0.0
@@ -491,12 +472,10 @@ func _on_player_lost():
 func _on_vision_body_entered(body: Node2D):
 	if body == player:
 		player_in_vision_cone = true
-		print("Jugador entró en el cono de visión.")
 
 func _on_vision_body_exited(body: Node2D):
 	if body == player:
 		player_in_vision_cone = false
-		print("Jugador salió del cono de visión.")
 		if current_state == State.CHASING:
 			_on_player_lost()
 
