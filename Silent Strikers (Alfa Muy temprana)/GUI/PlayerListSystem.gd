@@ -37,6 +37,10 @@ func _ready():
 	create_player_list_ui()
 	_ready_auto_refresh()
 	WebSocketManager.request_online_players()
+	
+	# ← CONECTAR NUEVAS SEÑALES
+	WebSocketManager.match_request_canceled.connect(_on_match_request_canceled)
+	WebSocketManager.match_request_canceled_by_sender.connect(_on_match_request_canceled_by_sender)
 
 func create_player_list_ui():
 	print("👥 Creando UI de lista de jugadores...")
@@ -365,18 +369,76 @@ func create_player_item(player_data: Dictionary):
 	decline_button.name = "DeclineButton"
 	button_container.add_child(decline_button)
 	
-	# Botón de desafío (solo para otros jugadores disponibles)
-	if player_id != my_player_data.get("id", "") and player_status == "AVAILABLE":
-		var action_button = Button.new()
-		action_button.text = "⚔️"
-		action_button.position = Vector2(245 * size_multiplier, 25 * size_multiplier)
-		action_button.size = Vector2(25 * size_multiplier, 25 * size_multiplier)
-		action_button.add_theme_font_size_override("font_size", int(12 * size_multiplier))
-		action_button.pressed.connect(_on_challenge_player.bind(player_data))
-		action_button.name = "ChallengeButton"
-		player_item.add_child(action_button)
+	# BOTONES DE ACCIÓN PARA OTROS JUGADORES
+	if player_id != my_player_data.get("id", ""):
+		# Contenedor de botones de acción
+		var action_container = HBoxContainer.new()
+		action_container.position = Vector2(200 * size_multiplier, 25 * size_multiplier)
+		action_container.size = Vector2(70 * size_multiplier, 25 * size_multiplier)
+		action_container.add_theme_constant_override("separation", int(3 * size_multiplier))
+		action_container.name = "ActionContainer"
+		player_item.add_child(action_container)
+		
+		# Botón de chat privado (💬)
+		var chat_button = Button.new()
+		chat_button.text = "💬"
+		chat_button.custom_minimum_size = Vector2(25 * size_multiplier, 25 * size_multiplier)
+		chat_button.add_theme_font_size_override("font_size", int(12 * size_multiplier))
+		chat_button.pressed.connect(_on_private_chat_button.bind(player_data))
+		chat_button.name = "ChatButton"
+		action_container.add_child(chat_button)
+		
+		# ← VERIFICAR SI TENGO SOLICITUD PENDIENTE A ESTE JUGADOR
+		if WebSocketManager.has_pending_request_to(player_id):
+			# Mostrar botón de cancelar en lugar de desafiar
+			var cancel_button = Button.new()
+			cancel_button.text = "🚫"
+			cancel_button.custom_minimum_size = Vector2(25 * size_multiplier, 25 * size_multiplier)
+			cancel_button.add_theme_font_size_override("font_size", int(12 * size_multiplier))
+			cancel_button.pressed.connect(_on_cancel_match_request.bind(player_data))
+			cancel_button.name = "CancelButton"
+			cancel_button.modulate = Color.ORANGE
+			action_container.add_child(cancel_button)
+		else:
+			# Botón de desafío (solo para jugadores disponibles)
+			if player_status == "AVAILABLE":
+				var challenge_button = Button.new()
+				challenge_button.text = "⚔️"
+				challenge_button.custom_minimum_size = Vector2(25 * size_multiplier, 25 * size_multiplier)
+				challenge_button.add_theme_font_size_override("font_size", int(12 * size_multiplier))
+				challenge_button.pressed.connect(_on_challenge_player.bind(player_data))
+				challenge_button.name = "ChallengeButton"
+				action_container.add_child(challenge_button)
 	
 	player_list_container.add_child(player_item)
+
+func _on_private_chat_button(player_data: Dictionary):
+	var player_name = player_data.get("name", "")
+	var player_id = player_data.get("id", "")
+	print("💬 Iniciando chat privado con: ", player_name)
+	
+	# Enviar señal al chat system para cambiar a modo privado
+	var chat_system = get_node_or_null("../ChatSystem")
+	if chat_system:
+		chat_system.start_private_chat(player_name, player_id)
+	
+	# Notificar en el chat
+	if chat_system:
+		chat_system.add_chat_message("Sistema", "💬 Chat privado iniciado con " + player_name)
+
+# ← NUEVA FUNCIÓN PARA CANCELAR SOLICITUDES
+func _on_cancel_match_request(player_data: Dictionary):
+	var player_name = player_data.get("name", "")
+	var player_id = player_data.get("id", "")
+	print("🚫 Cancelando solicitud de partida a: ", player_name)
+	
+	# Enviar cancelación al servidor
+	WebSocketManager.cancel_match_request()
+	
+	# Notificar en el chat
+	var chat_system = get_node_or_null("../ChatSystem")
+	if chat_system:
+		chat_system.add_chat_message("Sistema", "🚫 Solicitud de partida cancelada a " + player_name)
 
 func get_status_text(status: String) -> String:
 	match status:
@@ -391,16 +453,11 @@ func get_status_text(status: String) -> String:
 
 func _on_challenge_player(player_data: Dictionary):
 	var player_name = player_data.get("name", "")
+	var player_id = player_data.get("id", "")
 	print("⚔️ Desafiando a jugador: ", player_name)
 	
-	# Enviar desafío
-	var body_challenge = {
-		"event": "send-match-request",
-		"data": {
-			"playerId": player_data.get("id"),
-		}
-	}
-	WebSocketManager.send_message(body_challenge)
+	# ← ENVIAR SOLICITUD CON NOMBRE PARA TRACKING
+	WebSocketManager.send_match_request(player_id, player_name)
 	
 	# Notificar en chat
 	var chat_system = get_node_or_null("../ChatSystem")
@@ -410,6 +467,29 @@ func _on_challenge_player(player_data: Dictionary):
 	# ACTUALIZAR LA LISTA inmediatamente después de enviar el desafío
 	print("🔄 Actualizando lista después de enviar desafío...")
 	call_deferred("request_online_players")
+
+# ← NUEVAS FUNCIONES PARA MANEJAR CANCELACIONES
+func _on_match_request_canceled(player_id: String):
+	print("✅ Solicitud cancelada exitosamente")
+	
+	# Notificar en el chat
+	var chat_system = get_node_or_null("../ChatSystem")
+	if chat_system:
+		chat_system.add_chat_message("Sistema", "✅ Solicitud de partida cancelada exitosamente")
+	
+	# Actualizar la lista para reflejar el cambio
+	call_deferred("request_online_players")
+
+func _on_match_request_canceled_by_sender(player_name: String, player_id: String):
+	print("🚫 Solicitud cancelada por: ", player_name)
+	
+	# Ocultar la solicitud si estaba visible
+	hide_match_request(player_id)
+	
+	# Notificar en el chat
+	var chat_system = get_node_or_null("../ChatSystem")
+	if chat_system:
+		chat_system.add_chat_message("Sistema", "🚫 " + player_name + " canceló su solicitud de partida")
 
 func _ready_auto_refresh():
 	var timer = Timer.new()
@@ -447,10 +527,10 @@ func show_match_request_internal(player_name: String, player_id: String, match_i
 	# Mostrar los botones de aceptar/declinar
 	button_container.visible = true
 	
-	# Ocultar el botón de desafío si existe
-	var challenge_button = player_item.get_node_or_null("ChallengeButton")
-	if challenge_button:
-		challenge_button.visible = false
+	# Ocultar el contenedor de acciones si existe
+	var action_container = player_item.get_node_or_null("ActionContainer")
+	if action_container:
+		action_container.visible = false
 	
 	# Cambiar el fondo para destacar la solicitud
 	var item_bg = player_item.get_node_or_null("ItemBg")
@@ -573,15 +653,15 @@ func hide_match_request(player_id: String):
 	if not player_item:
 		return
 	
-	# Ocultar botones
+	# Ocultar botones de aceptar/declinar
 	var button_container = player_item.get_node_or_null("ButtonContainer")
 	if button_container:
 		button_container.visible = false
 	
-	# Mostrar botón de desafío nuevamente si aplica
-	var challenge_button = player_item.get_node_or_null("ChallengeButton")
-	if challenge_button:
-		challenge_button.visible = true
+	# Mostrar botones de acción nuevamente si aplica
+	var action_container = player_item.get_node_or_null("ActionContainer")
+	if action_container:
+		action_container.visible = true
 	
 	# Restaurar color de fondo normal
 	var item_bg = player_item.get_node_or_null("ItemBg")

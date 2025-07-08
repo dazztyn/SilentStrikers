@@ -15,11 +15,13 @@ scale = Vector2(5, 5)
 texture = ExtResource("2_d77kl")
 
 [node name="RayCast2D" type="RayCast2D" parent="."]
+visible = false
 
 [node name="Area2D" type="Area2D" parent="."]
 script = ExtResource("3_ksbri")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+visible = false
 position = Vector2(-1, 2)
 scale = Vector2(4, 4)
 shape = SubResource("RectangleShape2D_r7dab")

@@ -15,6 +15,9 @@ var current_match_id = ""
 var match_status = ""
 var game_state = "LOBBY"  # LOBBY, MAP_SELECTION, IN_GAME, POST_GAME
 
+# ← NUEVO: Tracking de solicitudes enviadas
+var pending_sent_requests = {}  # {player_id: {player_name: "", timestamp: 0}}
+
 # Señales para comunicación entre escenas
 signal player_connected(data)
 signal match_request_received(player_name, player_id, match_id)
@@ -27,7 +30,10 @@ signal rematch_requested(data)
 signal match_quit(data)  # Se emite cuando el OPONENTE salió (close-match recibido)
 signal player_list_updated(players)
 signal chat_message_received(sender, message)
+signal private_message_received(sender, player_id, message)
 signal message_received(data)
+signal match_request_canceled(player_id)  # ← NUEVA SEÑAL
+signal match_request_canceled_by_sender(player_name, player_id)  # ← NUEVA SEÑAL
 
 func _ready():
 	print("🔗 WebSocketManager Singleton iniciado")
@@ -134,6 +140,8 @@ func handle_message(message: String):
 			handle_login(data.get("data", {}))
 		"public-message":
 			handle_public_message(data.get("data", {}))
+		"private-message":
+			handle_private_message(data.get("data", {}))
 		"online-players":
 			handle_online_players(data.get("data", []))
 		"match-request-received":
@@ -154,6 +162,10 @@ func handle_message(message: String):
 			handle_close_match()
 		"quit-match":
 			handle_quit_match_response()
+		"cancel-match-request":  # ← NUEVO EVENTO
+			handle_cancel_match_request(data.get("data", {}), msg)
+		"match-canceled-by-sender":  # ← NUEVO EVENTO
+			handle_match_canceled_by_sender(data.get("data", {}), msg)
 		"error":
 			handle_error(data.get("data", {}))
 		
@@ -166,6 +178,13 @@ func handle_public_message(data: Dictionary):
 	var sender = data.get("playerName", "")
 	var message = data.get("playerMsg", "")
 	emit_signal("chat_message_received", sender, message)
+
+func handle_private_message(data: Dictionary):
+	var sender = data.get("playerName", "")
+	var player_id = data.get("playerId", "")
+	var message = data.get("playerMsg", "")
+	print("💬 Mensaje privado de: ", sender, " - ", message)
+	emit_signal("private_message_received", sender, player_id, message)
 
 func handle_online_players(players: Array):
 	emit_signal("player_list_updated", players)
@@ -220,7 +239,24 @@ func handle_close_match():
 func handle_quit_match_response():
 	print("✅ QUIT-MATCH: Confirmación de que salí de la partida")
 	emit_signal("match_quit")
+
+# ← NUEVAS FUNCIONES PARA MANEJAR CANCELACIONES
+func handle_cancel_match_request(data: Dictionary, message: String):
+	var player_id = data.get("playerId", "")
+	print("✅ Solicitud de partida cancelada exitosamente")
 	
+	# Remover de solicitudes enviadas
+	if pending_sent_requests.has(player_id):
+		pending_sent_requests.erase(player_id)
+	
+	emit_signal("match_request_canceled", player_id)
+
+func handle_match_canceled_by_sender(data: Dictionary, message: String):
+	var player_id = data.get("playerId", "")
+	var player_name = extract_player_name_from_message(message)
+	print("🚫 Solicitud de partida cancelada por: ", player_name)
+	emit_signal("match_request_canceled_by_sender", player_name, player_id)
+
 func handle_error(data: Dictionary):
 	print("❌ Error del servidor: ", data.get("message", ""))
 
@@ -239,12 +275,34 @@ func send_public_message(text: String):
 	}
 	send_message(message)
 
-func send_match_request(player_id: String):
+func send_private_message(player_id: String, text: String):
+	var message = {
+		"event": "send-private-message",
+		"data": {
+			"playerId": player_id,
+			"message": text
+		}
+	}
+	send_message(message)
+
+func send_match_request(player_id: String, player_name: String = ""):
 	var request = {
 		"event": "send-match-request",
 		"data": {"playerId": player_id}
 	}
+	
+	# ← GUARDAR SOLICITUD ENVIADA
+	pending_sent_requests[player_id] = {
+		"player_name": player_name,
+		"timestamp": Time.get_unix_time_from_system()
+	}
+	
 	send_message(request)
+
+# ← NUEVA FUNCIÓN PARA CANCELAR SOLICITUDES
+func cancel_match_request():
+	var message = {"event": "cancel-match-request"}
+	send_message(message)
 
 func accept_match():
 	var response = {"event": "accept-match"}
@@ -318,6 +376,13 @@ func change_player_name(name: String):
 		}
 	}
 	send_message(message)
+
+# ← NUEVAS FUNCIONES GETTER
+func get_pending_sent_requests() -> Dictionary:
+	return pending_sent_requests
+
+func has_pending_request_to(player_id: String) -> bool:
+	return pending_sent_requests.has(player_id)
 
 # Getters
 func get_player_data() -> Dictionary:

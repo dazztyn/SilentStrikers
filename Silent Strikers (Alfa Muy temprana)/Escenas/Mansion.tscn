@@ -18,11 +18,11 @@
 [ext_resource type="Texture2D" uid="uid://3v2beybe0ji6" path="res://assets/Sprites/UIs/vida_perdida.png" id="15_e5jov"]
 [ext_resource type="Texture2D" uid="uid://cupu8hi6ix3lq" path="res://assets/Sprites/UIs/vida.png" id="16_8kqfa"]
 [ext_resource type="PackedScene" uid="uid://c4thuj5ju7mw3" path="res://Escenas/TP.tscn" id="20_5hwbx"]
-[ext_resource type="Script" path="res://Codigos/Potenciadores/dual_item_spawner.gd" id="20_nofbg"]
+[ext_resource type="Script" uid="uid://c4p4olvvgb1sl" path="res://Codigos/Potenciadores/dual_item_spawner.gd" id="20_nofbg"]
 [ext_resource type="PackedScene" uid="uid://dm0spd0ho6h4o" path="res://Codigos/Potenciadores/CollectableItem.tscn" id="21_2y381"]
 [ext_resource type="Script" uid="uid://bup3aefmj2dhp" path="res://Codigos/tp2.gd" id="21_nofbg"]
-[ext_resource type="PackedScene" uid="uid://cl88n8ievs7in" path="res://Codigos/Potenciadores/speed_potion.tscn" id="22_sd6ds"]
-[ext_resource type="PackedScene" uid="uid://bh0g6pw6ph2ic" path="res://Codigos/Potenciadores/invisibility_potion.tscn" id="23_6q0rs"]
+[ext_resource type="PackedScene" uid="uid://bqngjaxqklbf" path="res://Codigos/Potenciadores/speed_potion.tscn" id="22_sd6ds"]
+[ext_resource type="PackedScene" uid="uid://deiwkfa3o8irb" path="res://Codigos/Potenciadores/invisibility_potion.tscn" id="23_6q0rs"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_qdyep"]
 vertices = PackedVector2Array(23, 23, -23, 23, -23, -23, 23, -23)
@@ -4905,7 +4905,6 @@ position = Vector2(104, 339)
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2(1, -1)
-zoom = Vector2(2, 2)
 
 [node name="Guardia_4" parent="." node_paths=PackedStringArray("navigation_region") instance=ExtResource("6_mhhoc")]
 z_index = 1
@@ -4926,6 +4925,7 @@ position = Vector2(615, 242)
 navigation_region = NodePath("../PatrullaGuardia_1")
 
 [node name="PatrullaGuardia_1" type="NavigationRegion2D" parent="."]
+visible = false
 position = Vector2(1, 14)
 navigation_polygon = SubResource("NavigationPolygon_11dg0")
 
@@ -4934,6 +4934,7 @@ position = Vector2(2223, 273)
 navigation_region = NodePath("../PatrullaGuardia_2")
 
 [node name="PatrullaGuardia_2" type="NavigationRegion2D" parent="."]
+visible = false
 navigation_polygon = SubResource("NavigationPolygon_cn7dx")
 
 [node name="Camara" parent="." node_paths=PackedStringArray("player") instance=ExtResource("6_11dg0")]
@@ -5131,32 +5132,49 @@ position = Vector2(1913, -371)
 position = Vector2(1628, 2323)
 script = ExtResource("21_nofbg")
 
-[node name="SpawnPoint1" type="Node2D" parent="."]
-position = Vector2(-15, 205)
-
-[node name="SpawnPoint2" type="Node2D" parent="."]
-position = Vector2(620, 616)
-
-[node name="SpawnPoint3" type="Node2D" parent="."]
-position = Vector2(493, 111)
-
 [node name="ItemSpawner" type="Node2D" parent="." node_paths=PackedStringArray("spawn_points")]
 position = Vector2(851, 148)
 script = ExtResource("20_nofbg")
-spawn_points = [NodePath("../SpawnPoint1"), NodePath("../SpawnPoint2"), NodePath("../SpawnPoint3")]
+spawn_points = [NodePath("Ubi"), NodePath("Ubi8"), NodePath("Ubi7"), NodePath("Ubi2"), NodePath("Ubi3"), NodePath("Ubi4"), NodePath("Ubi5"), NodePath("Ubi6")]
 collectable_scene = ExtResource("21_2y381")
 speed_potion_scene = ExtResource("22_sd6ds")
 invisibility_potion_scene = ExtResource("23_6q0rs")
 min_spawn_time = 0.1
 max_spawn_time = 1.0
+max_potions = 4
 collectable_spawn_chance = 80
 potion_spawn_chance = 20
+
+[node name="Ubi" type="Node2D" parent="ItemSpawner"]
+position = Vector2(-712, 449)
+
+[node name="Ubi8" type="Node2D" parent="ItemSpawner"]
+position = Vector2(-804, -15)
+
+[node name="Ubi7" type="Node2D" parent="ItemSpawner"]
+position = Vector2(754, -125)
+
+[node name="Ubi2" type="Node2D" parent="ItemSpawner"]
+position = Vector2(-370, 483)
+
+[node name="Ubi3" type="Node2D" parent="ItemSpawner"]
+position = Vector2(-169, 1296)
+
+[node name="Ubi4" type="Node2D" parent="ItemSpawner"]
+position = Vector2(1064, 1343)
+
+[node name="Ubi5" type="Node2D" parent="ItemSpawner"]
+position = Vector2(-320, 907)
+
+[node name="Ubi6" type="Node2D" parent="ItemSpawner"]
+position = Vector2(2330, 198)
 
 [node name="Guardia_7" parent="." node_paths=PackedStringArray("navigation_region") instance=ExtResource("6_mhhoc")]
 position = Vector2(122, 3692)
 navigation_region = NodePath("../PatrullaGuardia_7")
 
 [node name="PatrullaGuardia_7" type="NavigationRegion2D" parent="."]
+visible = false
 position = Vector2(1, 14)
 navigation_polygon = SubResource("NavigationPolygon_2y381")
 
@@ -5177,5 +5195,36 @@ position = Vector2(3161, 3716)
 navigation_region = NodePath("../PatrullaGuardia_7")
 
 [node name="PatrullaGuardia_8" type="NavigationRegion2D" parent="."]
+visible = false
 position = Vector2(1, 14)
 navigation_polygon = SubResource("NavigationPolygon_omue6")
+
+[node name="ItemSpawner2" type="Node2D" parent="." node_paths=PackedStringArray("spawn_points")]
+script = ExtResource("20_nofbg")
+spawn_points = [NodePath("Ubi"), NodePath("Ubi2"), NodePath("Ubi3"), NodePath("Ubi4"), NodePath("Ubi5"), NodePath("Ubi6"), NodePath("Ubi7")]
+collectable_scene = ExtResource("21_2y381")
+speed_potion_scene = ExtResource("22_sd6ds")
+invisibility_potion_scene = ExtResource("23_6q0rs")
+max_collectables = 5
+max_potions = 3
+
+[node name="Ubi" type="Node2D" parent="ItemSpawner2"]
+position = Vector2(1618, 4104)
+
+[node name="Ubi2" type="Node2D" parent="ItemSpawner2"]
+position = Vector2(1045, 2602)
+
+[node name="Ubi3" type="Node2D" parent="ItemSpawner2"]
+position = Vector2(2335, 2602)
+
+[node name="Ubi4" type="Node2D" parent="ItemSpawner2"]
+position = Vector2(3064, 3781)
+
+[node name="Ubi5" type="Node2D" parent="ItemSpawner2"]
+position = Vector2(2941, 2608)
+
+[node name="Ubi6" type="Node2D" parent="ItemSpawner2"]
+position = Vector2(306, 3759)
+
+[node name="Ubi7" type="Node2D" parent="ItemSpawner2"]
+position = Vector2(267, 2580)

@@ -10,15 +10,25 @@ var chat_messages: VBoxContainer
 var message_input: LineEdit
 var send_button: Button
 var chat_toggle: Button
+var chat_mode_button: Button  # ← NUEVO BOTÓN
 
 # Configuración del chat
 var max_messages = 50
 var chat_visible = true
 
+# ← NUEVAS VARIABLES PARA CHAT PRIVADO
+var chat_mode = "PUBLIC"  # "PUBLIC" o "PRIVATE"
+var private_chat_player_name = ""
+var private_chat_player_id = ""
+
 func _ready():
 	print("=== Iniciando sistema de chat ===")
 	# Usar call_deferred para evitar el error de nodo ocupado
 	call_deferred("create_chat_ui")
+	
+	# ← CONECTAR SEÑAL DE MENSAJES PRIVADOS
+	if WebSocketManager:
+		WebSocketManager.private_message_received.connect(_on_private_message_received)
 
 func create_chat_ui():
 	print("Creando UI del chat...")
@@ -59,10 +69,19 @@ func setup_chat_interface(canvas_layer: CanvasLayer):
 	bg_panel.add_theme_stylebox_override("panel", style_box)
 	chat_ui.add_child(bg_panel)
 	
+	# ← BOTÓN PARA CAMBIAR MODO DE CHAT
+	chat_mode_button = Button.new()
+	chat_mode_button.text = "🌐 Público"
+	chat_mode_button.position = Vector2(5 * size_multiplier, 5 * size_multiplier)
+	chat_mode_button.size = Vector2(120 * size_multiplier, 30 * size_multiplier)
+	chat_mode_button.add_theme_font_size_override("font_size", int(10 * size_multiplier))
+	chat_mode_button.pressed.connect(_on_chat_mode_button_pressed)
+	chat_ui.add_child(chat_mode_button)
+	
 	# === ÁREA DE MENSAJES ===
 	var scroll_container = ScrollContainer.new()
-	scroll_container.position = Vector2(5 * size_multiplier, 5 * size_multiplier)
-	scroll_container.size = Vector2(390 * size_multiplier, 445 * size_multiplier)
+	scroll_container.position = Vector2(5 * size_multiplier, 40 * size_multiplier)  # ← AJUSTADO POR EL BOTÓN
+	scroll_container.size = Vector2(390 * size_multiplier, 410 * size_multiplier)    # ← AJUSTADO POR EL BOTÓN
 	chat_ui.add_child(scroll_container)
 	
 	chat_messages = VBoxContainer.new()
@@ -99,6 +118,15 @@ func setup_chat_interface(canvas_layer: CanvasLayer):
 	add_system_message("Chat iniciado. ¡Bienvenido!")
 	print("=== Chat listo ===")
 
+# ← NUEVA FUNCIÓN PARA CAMBIAR MODO DE CHAT
+func _on_chat_mode_button_pressed():
+	if chat_mode == "PRIVATE":
+		# Cambiar a modo público
+		set_chat_mode("PUBLIC")
+		add_system_message("📢 Cambiado a chat público")
+	else:
+		add_system_message("💬 Usa el botón 💬 en la lista de jugadores para chatear en privado")
+
 func get_safe_timestamp() -> String:
 	var datetime_dict = Time.get_datetime_dict_from_system()
 	var hour = str(datetime_dict.hour).pad_zeros(2)
@@ -126,7 +154,7 @@ func _on_message_submitted(text: String):
 
 func _on_send_button_pressed():
 	print("Botón enviar presionado")
-	send_chat_message("Yo",message_input.text)
+	send_chat_message("Yo", message_input.text)
 
 func _on_chat_toggle_pressed():
 	print("Toggle chat presionado")
@@ -143,14 +171,26 @@ func send_chat_message(sender: String, text: String):
 	if text.begins_with("/"):
 		handle_chat_command(text)
 	else:
-		if sender == "Yo":
-			add_chat_message("Tú", text)
+		# ← MANEJAR MENSAJE SEGÚN EL MODO
+		if chat_mode == "PRIVATE":
+			# Enviar mensaje privado
+			if private_chat_player_id != "":
+				WebSocketManager.send_private_message(private_chat_player_id, text)
+				add_chat_message("Tú → " + private_chat_player_name, text)
+				print("Mensaje privado enviado a: ", private_chat_player_name)
+			else:
+				add_system_message("⚠️ No hay chat privado activo")
 		else:
-			add_chat_message(sender, text)
-		
-		# Enviar al servidor si está conectado
-		WebSocketManager.send_public_message(text)
-		print("Mensaje enviado al servidor")
+			# Enviar mensaje público
+			if sender == "Yo":
+				add_chat_message("Tú", text)
+			else:
+				add_chat_message(sender, text)
+			
+			# Enviar al servidor
+			WebSocketManager.send_public_message(text)
+			print("Mensaje público enviado al servidor")
+	
 	# Limpiar input
 	message_input.text = ""
 
@@ -167,6 +207,7 @@ func handle_chat_command(command: String):
 			add_system_message("/clear - Limpiar chat")
 			add_system_message("/test - Mensaje de prueba")
 			add_system_message("/toggle - Mostrar/ocultar chat")
+			add_system_message("/public - Cambiar a chat público")
 		"/clear":
 			clear_chat()
 		"/players", "/refresh":
@@ -177,6 +218,9 @@ func handle_chat_command(command: String):
 			add_chat_message("Sistema", "¡Este es un mensaje de prueba!")
 		"/toggle":
 			toggle_chat_visibility()
+		"/public":
+			set_chat_mode("PUBLIC")
+			add_system_message("📢 Cambiado a chat público")
 		_:
 			add_system_message("Comando desconocido: " + cmd)
 
@@ -197,6 +241,39 @@ func toggle_chat_visibility():
 	if chat_toggle:
 		chat_toggle.text = "Mostrar" if not chat_visible else "Ocultar"
 
+# ← NUEVAS FUNCIONES PARA CHAT PRIVADO
+func start_private_chat(player_name: String, player_id: String):
+	private_chat_player_name = player_name
+	private_chat_player_id = player_id
+	set_chat_mode("PRIVATE")
+	add_system_message("💬 Chat privado iniciado con " + player_name)
+	print("Chat privado iniciado con: ", player_name)
+
+func set_chat_mode(mode: String):
+	chat_mode = mode
+	
+	if chat_mode == "PRIVATE":
+		chat_mode_button.text = "💬 " + private_chat_player_name
+		chat_mode_button.modulate = Color.LIGHT_BLUE
+		message_input.placeholder_text = "Mensaje privado para " + private_chat_player_name + "..."
+	else:
+		chat_mode_button.text = "🌐 Público"
+		chat_mode_button.modulate = Color.WHITE
+		message_input.placeholder_text = "Escribe tu mensaje..."
+		private_chat_player_name = ""
+		private_chat_player_id = ""
+
+func _on_private_message_received(sender: String, player_id: String, message: String):
+	print("💬 Mensaje privado recibido de: ", sender)
+	add_chat_message(sender + " → Tú", message)
+	
+	# Si no estamos en chat privado con esta persona, sugerirlo
+	if chat_mode != "PRIVATE" or private_chat_player_id != player_id:
+		add_system_message("💡 Usa el botón 💬 para responder en privado a " + sender)
+
+func on_message_received(sender: String, message: String):
+	add_chat_message(sender, message)
+
 func add_chat_message(sender: String, message: String):
 	if not chat_messages:
 		print("Error: chat_messages no existe aún")
@@ -209,10 +286,14 @@ func add_chat_message(sender: String, message: String):
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	label.custom_minimum_size.y = 20 * size_multiplier
 	label.add_theme_font_size_override("font_size", int(11 * size_multiplier))
+	
+	# ← COLORES ESPECÍFICOS PARA MENSAJES PRIVADOS
 	if sender == "Sistema":
 		label.modulate = Color.DARK_ORCHID
-	elif sender == "Tú":
+	elif sender == "Tú" or sender.begins_with("Tú →"):
 		label.modulate = Color.CADET_BLUE
+	elif sender.contains("→ Tú"):
+		label.modulate = Color.LIGHT_GREEN  # Mensajes privados recibidos
 	else:
 		label.modulate = Color.WHITE
 	
@@ -242,27 +323,6 @@ func scroll_to_bottom():
 		var scrollbar = scroll_container.get_v_scroll_bar()
 		if scrollbar:
 			scroll_container.scroll_vertical = int(scrollbar.max_value)
-
-# Funciones para el WebSocketManager
-
-func on_player_joined_chat(player_name: String):
-	add_system_message(player_name + " se unió al juego")
-
-func on_player_left_chat(player_name: String):
-	add_system_message(player_name + " dejó el juego")
-	
-func on_message_received(sender: String, message: String):
-	add_chat_message(sender, message)
-
-func _input(event):
-	# Atajo de teclado para mostrar/ocultar chat (opcional)
-	if event is InputEventKey and event.pressed:
-		if event.keycode == KEY_F1:  # F1 para toggle chat
-			toggle_chat_visibility()
-		elif event.keycode == KEY_ENTER and message_input and not message_input.has_focus():
-			# Enter para enfocar el chat
-			if chat_visible and message_input:
-				message_input.grab_focus()
 
 func _exit_tree():
 	print("Limpiando chat system...")
