@@ -10,13 +10,13 @@ var puntaje_win = 2500
 var game = false # Para ver si la partida termino o sigue
 var invisibility_time = 5
 var jugador: CharacterBody2D
-var potenciador_duplicado: Area2D #instancia duplicada del potenciador
-var item_duplicado: Area2D #instancia duplicada del item robable
 var mapa: Node2D
 @onready var footstep_audio: AudioStreamPlayer2D = $pasos
+
 # === SISTEMA DE MODO DE JUEGO ===
 var is_multiplayer: bool = false
 var multiplayer_errors: int = 0  # Contador de errores de multiplayer
+
 # === VARIABLES PARA SONIDOS DE PASO ===
 var is_walking: bool = false
 var footstep_timer: float = 0.0
@@ -27,13 +27,10 @@ var spell_z_cost = 200    # Costo hechizo Z
 var spell_x_cost = 600      # Costo hechizo X  
 var spell_c_cost = 1000      # Costo hechizo C
 
-#colocar manuealmente los puntos posibles de spawn
+# === NUEVO SISTEMA DE ITEMS ===
 @export var spawn_points_it: Array[NodePath] = []
 @export var spawn_points_pd: Array[NodePath] = []
-#paths para sprites (editable), se podría establecer el efecto/puntaje del potenciador/item en base a su .texture
-@export var sprites_it = ["res://assets/Imagenes/item_robable_01.png","res://assets/Imagenes/item_robable_02.png","res://assets/Imagenes/item_robable_03.png","res://assets/Imagenes/item_robable_04.png"]
-@export var sprites_pd = ["res://assets/Imagenes/item_robable_01.png","res://assets/Imagenes/item_robable_02.png"]
-var spawn_index = 0
+var item_spawner: ItemSpawner
 var invisibilidad_usada = false #para que el cooldown empiece a correr sólo cuando se usó
 var item_recogido = false #para que se cambie la posicion del item robable
 var controls_confused = false
@@ -46,6 +43,9 @@ func _ready():
 	mapa = get_node("..")
 	puntaje = 0
 	muerto = false
+	
+	# Initialize new item spawner system
+	item_spawner = ItemSpawner.new(mapa, spawn_points_it, spawn_points_pd)
 	
 	# Detectar modo de juego
 	detect_game_mode()
@@ -93,39 +93,18 @@ func _process(delta):
 		return
 	
 	velocity = Vector2()
+	
+	# === SISTEMA DE INVISIBILIDAD SIMPLIFICADO ===
 	if invisible():
 		invisibility_time -= delta
-	if invisibility_time <= 0:
-		invisibility_time = 5
-		jugador.collision_layer = 1|2|3
-		modulate.a = 1
-		potenciador_duplicado = preload("res://Escenas/potenciador.tscn").instantiate()
-		potenciador_duplicado.get_child(1).texture = get_sprite_pd()
-		mapa.add_child(potenciador_duplicado)
-		potenciador_duplicado.scale = Vector2(0.3, 0.3)
-		_set_next_spawn_point_pd()
-		invisibilidad_usada = false
+		if invisibility_time <= 0:
+			_end_invisibility()
 	
+	# === SISTEMA DE SPAWNEO SIMPLIFICADO ===
 	if item_recogido:
 		item_recogido = false
-		item_duplicado = preload("res://Escenas/item.tscn").instantiate()
-		mapa.add_child(item_duplicado)
-		item_duplicado.get_child(1).texture = get_sprite_it()
-
-		match item_duplicado.get_child(1).texture:
-			preload("res://assets/Imagenes/item_robable_01.png"):
-				item_duplicado.puntos = 200
-			preload("res://assets/Imagenes/item_robable_02.png"):
-				item_duplicado.puntos = 100
-			preload("res://assets/Imagenes/item_robable_03.png"):
-				item_duplicado.puntos = 150
-			preload("res://assets/Imagenes/item_robable_04.png"):
-				item_duplicado.puntos = 150
-			_:
-				print("Sprite item inválido")
-		
-		item_duplicado.scale = Vector2(0.2, 0.2)
-		_set_next_spawn_point_it()
+		if item_spawner:
+			item_spawner.spawn_random_item()
 
 	# === CONTROLES CON CONFUSIÓN ===
 	if controls_confused:
@@ -153,10 +132,19 @@ func _process(delta):
 		velocity = velocity.normalized() * speed
 	
 	update_animation()
-
 	handle_footstep_sounds(delta)
-
 	move_and_slide()
+
+# === NUEVAS FUNCIONES PARA EL SISTEMA DE ITEMS ===
+
+func _end_invisibility():
+	invisibility_time = 5
+	jugador.collision_layer = 1|2|3
+	modulate.a = 1
+	invisibilidad_usada = false
+	# Spawn a new powerup when invisibility ends
+	if item_spawner:
+		item_spawner.spawn_random_powerup()
 
 # === SISTEMA DE SONIDOS DE PASO ===
 func handle_footstep_sounds(delta):
@@ -469,18 +457,33 @@ func aumentar_velocidad(cantidad):
 		speed = velMax
 		return
 	speed += cantidad
-	potenciador_duplicado = preload("res://Escenas/potenciador.tscn").instantiate()
-	potenciador_duplicado.get_child(1).texture = get_sprite_pd()
-	mapa.add_child(potenciador_duplicado)
-	potenciador_duplicado.scale = Vector2(0.3, 0.3)
-	_set_next_spawn_point_pd()
+	# Spawn a new powerup using the new system
+	if item_spawner:
+		item_spawner.spawn_random_powerup()
 	print("Velocidad actual: ", speed)
 
-#hace que el jugador sea indetectable y cambia la opacidad del sprite
-func transparentar(transparencia):
+# === NUEVAS FUNCIONES REQUERIDAS ===
+
+func aplicar_invisibilidad(transparencia):
+	"""Nueva función para aplicar invisibilidad reemplazando transparentar()"""
 	jugador.collision_layer = 0
 	modulate.a = transparencia
 	invisibilidad_usada = true
+	print("Invisibilidad aplicada con transparencia: ", transparencia)
+
+func restaurar_salud(cantidad):
+	"""Nueva función para restaurar salud"""
+	if muerto:
+		return
+	salud += cantidad
+	print("Salud restaurada. Salud actual: ", salud)
+
+# === FUNCIONES ORIGINALES MANTENIDAS ===
+
+#hace que el jugador sea indetectable y cambia la opacidad del sprite
+func transparentar(transparencia):
+	"""Función original mantenida por compatibilidad"""
+	aplicar_invisibilidad(transparencia)
 
 func invisible():
 	return invisibilidad_usada
@@ -488,40 +491,16 @@ func invisible():
 func recoger():
 	item_recogido = true
 
-func _set_next_spawn_point_pd():
-	if spawn_points_pd.size() == 0:
-		return
-	var new_index = randi_range(0, spawn_points_pd.size()-1)
-	if spawn_index != new_index:
-		spawn_index = new_index
-	else:
-		spawn_index -= 2
-	
-	var spawn_node = get_node_or_null(spawn_points_pd[spawn_index])
-	if spawn_node:
-		potenciador_duplicado.position = spawn_node.global_position
+# === FUNCIONES SIMPLIFICADAS DE SPAWNEO ===
+# Las funciones de spawneo ahora se manejan através del ItemSpawner
+# Mantenemos funciones simplificadas para compatibilidad si es necesario
 
-func _set_next_spawn_point_it():
-	if spawn_points_it.size() == 0:
-		return
-	var new_index = randi_range(0, spawn_points_it.size()-1)
-	if spawn_index != new_index:
-		spawn_index = new_index
-	else:
-		spawn_index -= 2
-	
-	var spawn_node = get_node_or_null(spawn_points_it[spawn_index])
-	if spawn_node:
-		item_duplicado.position = spawn_node.global_position
+func spawn_item_at_random_location():
+	"""Función simplificada para spawnar item en ubicación aleatoria"""
+	if item_spawner:
+		item_spawner.spawn_random_item()
 
-func get_sprite_it():
-	if sprites_it.size() == 0:
-		return
-	var index = randi_range(0, sprites_it.size()-1)
-	return load(sprites_it[index])
-
-func get_sprite_pd():
-	if sprites_pd.size() == 0:
-		return
-	var index = randi_range(0, sprites_pd.size()-1)
-	return load(sprites_pd[index])
+func spawn_powerup_at_random_location():
+	"""Función simplificada para spawnar powerup en ubicación aleatoria"""
+	if item_spawner:
+		item_spawner.spawn_random_powerup()
