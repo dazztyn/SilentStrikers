@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=4 uid="uid://dl2c808di5er1"]
+[gd_scene load_steps=34 format=4 uid="uid://dl2c808di5er1"]
 
 [ext_resource type="Texture2D" uid="uid://bd32yf8lfvp0e" path="res://assets/Tiles mapas/Interiors_free_48x48.png" id="1_kgjmw"]
 [ext_resource type="Texture2D" uid="uid://cji12h6yd886u" path="res://assets/caja fuerte (1) (1).png" id="2_tpfsg"]
@@ -18,8 +18,12 @@
 [ext_resource type="Texture2D" uid="uid://cupu8hi6ix3lq" path="res://assets/Sprites/UIs/vida.png" id="17_860fa"]
 [ext_resource type="Texture2D" uid="uid://b1rlteqk18guf" path="res://assets/Sprites/sprits de prueba/New Piskel (11).png" id="19_0jfhd"]
 [ext_resource type="Texture2D" uid="uid://nlpgntvqo06s" path="res://assets/Sprites/sprits de prueba/New Piskel (9).png" id="20_vcnbm"]
+[ext_resource type="Script" uid="uid://c4p4olvvgb1sl" path="res://Codigos/Potenciadores/dual_item_spawner.gd" id="21_6h2d5"]
 [ext_resource type="Texture2D" uid="uid://c1d04k1ykdmrx" path="res://assets/Sprites/sprits de prueba/New Piskel (10).png" id="21_7sdlv"]
 [ext_resource type="AudioStream" uid="uid://dj3aqkygyycot" path="res://sonidos/Musica/Bad.mp3" id="21_860fa"]
+[ext_resource type="PackedScene" uid="uid://dm0spd0ho6h4o" path="res://Codigos/Potenciadores/CollectableItem.tscn" id="22_deglr"]
+[ext_resource type="PackedScene" uid="uid://bqngjaxqklbf" path="res://Codigos/Potenciadores/speed_potion.tscn" id="23_bhaya"]
+[ext_resource type="PackedScene" uid="uid://deiwkfa3o8irb" path="res://Codigos/Potenciadores/invisibility_potion.tscn" id="24_jecr2"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tx37k"]
 texture = ExtResource("1_kgjmw")
@@ -1573,44 +1577,6 @@ tile_map_data = PackedByteArray("AAAlAPn/CgAMAEIAAAAlAPr/CgAMAEMAAAA=")
 tile_set = SubResource("TileSet_gg3kn")
 navigation_enabled = false
 
-[node name="spawns" type="Node" parent="."]
-
-[node name="Marker2D" type="Marker2D" parent="spawns"]
-z_index = 1
-position = Vector2(4139, 1976)
-
-[node name="Marker2D2" type="Marker2D" parent="spawns"]
-z_index = 1
-position = Vector2(1725, -1035)
-
-[node name="Marker2D3" type="Marker2D" parent="spawns"]
-z_index = 1
-position = Vector2(4003, -1891)
-
-[node name="Marker2D4" type="Marker2D" parent="spawns"]
-z_index = 1
-position = Vector2(4823, -1677)
-
-[node name="Marker2D5" type="Marker2D" parent="spawns"]
-z_index = 1
-position = Vector2(5030, -688)
-
-[node name="Marker2D6" type="Marker2D" parent="spawns"]
-z_index = 1
-position = Vector2(4791, 892)
-
-[node name="Marker2D7" type="Marker2D" parent="spawns"]
-z_index = 1
-position = Vector2(1254, 337)
-
-[node name="Marker2D8" type="Marker2D" parent="spawns"]
-z_index = 1
-position = Vector2(1924, 1138)
-
-[node name="Marker2D9" type="Marker2D" parent="spawns"]
-z_index = 1
-position = Vector2(4820, 1990)
-
 [node name="Player" parent="." instance=ExtResource("6_bhxpy")]
 position = Vector2(560, 109)
 
@@ -1873,3 +1839,50 @@ stream = ExtResource("21_860fa")
 volume_db = -25.0
 autoplay = true
 parameters/looping = true
+
+[node name="ItemSpawner" type="Node2D" parent="." node_paths=PackedStringArray("spawn_points")]
+script = ExtResource("21_6h2d5")
+spawn_points = [NodePath("Ubi"), NodePath("Ubi2"), NodePath("Ubi3"), NodePath("Ubi4"), NodePath("Ubi5"), NodePath("Ubi6"), NodePath("Ubi7"), NodePath("Ubi8"), NodePath("Ubi9"), NodePath("Ubi10"), NodePath("Ubi11"), NodePath("Ubi12")]
+collectable_scene = ExtResource("22_deglr")
+speed_potion_scene = ExtResource("23_bhaya")
+invisibility_potion_scene = ExtResource("24_jecr2")
+max_collectables = 10
+max_potions = 6
+collectable_spawn_chance = 60
+potion_spawn_chance = 40
+
+[node name="Ubi" type="Node2D" parent="ItemSpawner"]
+position = Vector2(4085, 2104)
+
+[node name="Ubi2" type="Node2D" parent="ItemSpawner"]
+position = Vector2(3254, -624)
+
+[node name="Ubi3" type="Node2D" parent="ItemSpawner"]
+position = Vector2(4073, -1688)
+
+[node name="Ubi4" type="Node2D" parent="ItemSpawner"]
+position = Vector2(5192, -905)
+
+[node name="Ubi5" type="Node2D" parent="ItemSpawner"]
+position = Vector2(3676, 887)
+
+[node name="Ubi6" type="Node2D" parent="ItemSpawner"]
+position = Vector2(4410, 716)
+
+[node name="Ubi7" type="Node2D" parent="ItemSpawner"]
+position = Vector2(3376, 2024)
+
+[node name="Ubi8" type="Node2D" parent="ItemSpawner"]
+position = Vector2(4691, 1902)
+
+[node name="Ubi9" type="Node2D" parent="ItemSpawner"]
+position = Vector2(4618, -1927)
+
+[node name="Ubi10" type="Node2D" parent="ItemSpawner"]
+position = Vector2(2355, -734)
+
+[node name="Ubi11" type="Node2D" parent="ItemSpawner"]
+position = Vector2(2024, -1248)
+
+[node name="Ubi12" type="Node2D" parent="ItemSpawner"]
+position = Vector2(1871, -177)
