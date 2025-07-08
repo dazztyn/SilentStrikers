@@ -1,7 +1,8 @@
-[gd_scene load_steps=25 format=3 uid="uid://d1ouhuslclwme"]
+[gd_scene load_steps=26 format=3 uid="uid://d1ouhuslclwme"]
 
 [ext_resource type="Script" uid="uid://bl7xsghjndym2" path="res://Codigos/Guardia.gd" id="1_gxl0b"]
 [ext_resource type="Texture2D" uid="uid://8daqsfakk7h8" path="res://assets/Sprites/guardia 1 ajustado/fullspritesheet_enemigo1.png" id="2_g5ju6"]
+[ext_resource type="Theme" uid="uid://bh42wg05drqp6" path="res://GUI/Theme GUI/Ttles.tres" id="4_1uryg"]
 [ext_resource type="Script" uid="uid://ctuuiip4c0u0s" path="res://Codigos/vision.gd" id="5_g5ju6"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_1uryg"]
@@ -225,6 +226,8 @@ offset_left = -18.0
 offset_top = -92.0
 offset_right = 22.0
 offset_bottom = -69.0
+theme = ExtResource("4_1uryg")
+theme_override_font_sizes/font_size = 20
 horizontal_alignment = 1
 
 [connection signal="body_entered" from="Vision" to="." method="_on_vision_body_entered"]

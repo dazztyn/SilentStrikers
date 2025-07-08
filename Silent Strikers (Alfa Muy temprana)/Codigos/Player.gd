@@ -391,8 +391,8 @@ func aumentar_puntaje(cantidad: int):
 		if puntaje >= spell_c_cost:
 			print("    ✅ C (", spell_c_cost, " pts)")
 	
-	# Verificar victoria por puntaje
-	if puntaje >= puntaje_win:
+	
+	if puntaje >= puntaje_win and is_multiplayer == false:
 		game = true
 		print("¡Ganaste por puntaje!")
 		

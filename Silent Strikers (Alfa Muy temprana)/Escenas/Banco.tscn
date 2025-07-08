@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=4 uid="uid://dl2c808di5er1"]
+[gd_scene load_steps=34 format=4 uid="uid://dl2c808di5er1"]
 
 [ext_resource type="Texture2D" uid="uid://bd32yf8lfvp0e" path="res://assets/Tiles mapas/Interiors_free_48x48.png" id="1_kgjmw"]
 [ext_resource type="Texture2D" uid="uid://cji12h6yd886u" path="res://assets/caja fuerte (1) (1).png" id="2_tpfsg"]
@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://bjddy0l26f2h5" path="res://assets/Sprites/UIs/marco_minimapa.png" id="7_5wh67"]
 [ext_resource type="PackedScene" uid="uid://d1ouhuslclwme" path="res://Escenas/Guardia.tscn" id="7_21210"]
 [ext_resource type="PackedScene" uid="uid://cwbr2i4lpl8yd" path="res://Escenas/camara.tscn" id="7_r0jbp"]
+[ext_resource type="Theme" uid="uid://bh42wg05drqp6" path="res://GUI/Theme GUI/Ttles.tres" id="10_6h2d5"]
 [ext_resource type="Script" uid="uid://deyufbfcfeppo" path="res://Codigos/canvas_layer.gd" id="11_860fa"]
 [ext_resource type="Script" uid="uid://cf38ppbm0nchk" path="res://Codigos/sub_viewport.gd" id="12_7upgu"]
 [ext_resource type="Script" uid="uid://bmb10fy424788" path="res://Codigos/node_2d.gd" id="15_deglr"]
@@ -1623,16 +1624,7 @@ offset_left = 51.0
 offset_top = 38.0
 offset_right = -131.336
 offset_bottom = -56.936
-metadata/_edit_use_anchors_ = true
-
-[node name="Vida" type="Label" parent="HUD"]
-anchors_preset = -1
-anchor_right = 0.249
-anchor_bottom = 0.157
-offset_left = 883.0
-offset_top = 19.0
-offset_right = 636.152
-offset_bottom = -59.736
+theme = ExtResource("10_6h2d5")
 metadata/_edit_use_anchors_ = true
 
 [node name="barra_de_puntaje_1" type="TextureProgressBar" parent="HUD"]

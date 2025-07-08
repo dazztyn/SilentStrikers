@@ -1,4 +1,4 @@
-[gd_scene load_steps=57 format=4 uid="uid://dbicubno0126o"]
+[gd_scene load_steps=58 format=4 uid="uid://dbicubno0126o"]
 
 [ext_resource type="Texture2D" uid="uid://d1ugwl33ka3du" path="res://assets/Tiles mapas/tileset2.png" id="1_my4lf"]
 [ext_resource type="PackedScene" uid="uid://drs5cxv35r63x" path="res://Escenas/Player.tscn" id="1_n87ba"]
@@ -18,6 +18,7 @@
 [ext_resource type="Script" uid="uid://deyufbfcfeppo" path="res://Codigos/canvas_layer.gd" id="16_ua2ai"]
 [ext_resource type="Texture2D" uid="uid://bjddy0l26f2h5" path="res://assets/Sprites/UIs/marco_minimapa.png" id="17_dh30r"]
 [ext_resource type="Script" uid="uid://cf38ppbm0nchk" path="res://Codigos/sub_viewport.gd" id="18_shtlw"]
+[ext_resource type="Theme" uid="uid://bh42wg05drqp6" path="res://GUI/Theme GUI/Ttles.tres" id="18_smsy2"]
 [ext_resource type="Script" uid="uid://bmb10fy424788" path="res://Codigos/node_2d.gd" id="19_fju71"]
 [ext_resource type="Texture2D" uid="uid://b1rlteqk18guf" path="res://assets/Sprites/sprits de prueba/New Piskel (11).png" id="23_smsy2"]
 [ext_resource type="Texture2D" uid="uid://nlpgntvqo06s" path="res://assets/Sprites/sprits de prueba/New Piskel (9).png" id="24_6c1rx"]
@@ -2372,16 +2373,7 @@ offset_left = 51.0
 offset_top = 38.0
 offset_right = -131.336
 offset_bottom = -56.936
-metadata/_edit_use_anchors_ = true
-
-[node name="Vida" type="Label" parent="HUD"]
-anchors_preset = -1
-anchor_right = 0.249
-anchor_bottom = 0.157
-offset_left = 883.0
-offset_top = 19.0
-offset_right = 636.152
-offset_bottom = -59.736
+theme = ExtResource("18_smsy2")
 metadata/_edit_use_anchors_ = true
 
 [node name="barra_de_puntaje_1" type="TextureProgressBar" parent="HUD"]
