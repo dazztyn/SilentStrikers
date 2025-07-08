@@ -4942,7 +4942,6 @@ navigation_polygon = SubResource("NavigationPolygon_mhhoc")
 script = ExtResource("5_noela")
 
 [node name="Mascara gris" type="ColorRect" parent="HUD"]
-visible = false
 offset_left = -982.0
 offset_top = -938.0
 offset_right = 4584.0
