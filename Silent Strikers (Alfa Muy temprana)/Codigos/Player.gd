@@ -479,6 +479,7 @@ func go_to_defeat_scene():
 		print("💀 Cargando pantalla de derrota MULTIPLAYER")
 		get_tree().change_scene_to_file("res://GUI/Escenas/loss_escene.tscn")
 	else:
+		GameState.current_map_path = get_tree().current_scene.scene_file_path
 		print("💀 Cargando pantalla de derrota SINGLEPLAYER")
 		get_tree().change_scene_to_file("res://Escenas/defeat_screen.tscn")
 

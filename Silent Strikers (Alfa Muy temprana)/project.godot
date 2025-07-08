@@ -19,6 +19,7 @@ config/icon="res://assets/icon.svg"
 
 Singleton="*res://Codigos/singleton.gd"
 WebSocketManager="*res://GUI/WScript_Singleton.gd"
+GameState="*res://Codigos/GameState.gd"
 
 [display]
 
