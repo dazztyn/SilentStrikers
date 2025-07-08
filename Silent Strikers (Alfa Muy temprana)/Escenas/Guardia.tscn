@@ -175,7 +175,6 @@ path_desired_distance = 30.0
 target_desired_distance = 1.0
 avoidance_layers = 3
 avoidance_mask = 3
-debug_enabled = true
 
 [node name="VisionRayCast" type="RayCast2D" parent="."]
 visible = false
