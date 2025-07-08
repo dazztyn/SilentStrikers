@@ -1,7 +1,6 @@
 extends CanvasLayer
 
 @onready var score_label = $Puntaje
-@onready var life_label = $Vida
 @onready var oportunidad_1 = $oportunidad_1	
 @onready var oportunidad_2 = $oportunidad_2	
 @onready var oportunidad_3 = $oportunidad_3	

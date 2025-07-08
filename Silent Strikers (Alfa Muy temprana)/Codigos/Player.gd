@@ -1,62 +1,66 @@
 extends CharacterBody2D
 
-var puntaje
-var speed = 500
-var initial_speed = 500
-@export var velMax = 750
-var salud
-var muerto: bool = false # Para cambiar el salud <= 0
-var puntaje_win = 2500
-var game = false # Para ver si la partida termino o sigue
-var invisibility_time = 5
+# === VARIABLES BÁSICAS ===
+var puntaje: int = 0
+var speed: float = 500.0
+var initial_speed: float = 500.0
+@export var velMax: float = 750.0
+var salud: int = 3
+var max_salud: int = 3
+var muerto: bool = false
+var puntaje_win: int = 2500
+var game: bool = false
+
+# === SISTEMA DE INVISIBILIDAD ===
+var invisibility_time: float = 0.0
+var invisibility_duration: float = 5.0
+var invisibility_alpha: float = 0.5
+var invisibilidad_usada: bool = false
+
+# === REFERENCIAS A NODOS ===
 var jugador: CharacterBody2D
-var potenciador_duplicado: Area2D #instancia duplicada del potenciador
-var item_duplicado: Area2D #instancia duplicada del item robable
 var mapa: Node2D
 @onready var footstep_audio: AudioStreamPlayer2D = $pasos
-# === SISTEMA DE MODO DE JUEGO ===
-var is_multiplayer: bool = false
-var multiplayer_errors: int = 0  # Contador de errores de multiplayer
-# === VARIABLES PARA SONIDOS DE PASO ===
-var is_walking: bool = false
-var footstep_timer: float = 0.0
-var footstep_interval: float = 0.4  # Intervalo entre pasos en segundos
-
-# === SISTEMA DE HECHIZOS SIMPLES ===
-var spell_z_cost = 200    # Costo hechizo Z
-var spell_x_cost = 600      # Costo hechizo X  
-var spell_c_cost = 1000      # Costo hechizo C
-
-#colocar manuealmente los puntos posibles de spawn
-@export var spawn_points_it: Array[NodePath] = []
-@export var spawn_points_pd: Array[NodePath] = []
-#paths para sprites (editable), se podría establecer el efecto/puntaje del potenciador/item en base a su .texture
-@export var sprites_it = ["res://assets/Imagenes/item_robable_01.png","res://assets/Imagenes/item_robable_02.png","res://assets/Imagenes/item_robable_03.png","res://assets/Imagenes/item_robable_04.png"]
-@export var sprites_pd = ["res://assets/Imagenes/item_robable_01.png","res://assets/Imagenes/item_robable_02.png"]
-var spawn_index = 0
-var invisibilidad_usada = false #para que el cooldown empiece a correr sólo cuando se usó
-var item_recogido = false #para que se cambie la posicion del item robable
-var controls_confused = false
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 
+# === SISTEMA DE MODO DE JUEGO ===
+var is_multiplayer: bool = false
+var multiplayer_errors: int = 0
+
+# === SISTEMA DE SONIDOS DE PASO ===
+var is_walking: bool = false
+var footstep_timer: float = 0.0
+var footstep_interval: float = 0.4
+
+# === SISTEMA DE HECHIZOS ===
+var spell_z_cost: int = 200
+var spell_x_cost: int = 600
+var spell_c_cost: int = 1000
+
+# === SISTEMA DE CONFUSIÓN ===
+var controls_confused: bool = false
+
+# === SISTEMA DE EFECTOS TEMPORALES ===
+var active_effects: Array[Dictionary] = []
+
 func _ready():
+	# Configuración inicial
 	Singleton.registrar_player(self)
-	salud = 3
-	jugador = get_node(".")
-	mapa = get_node("..")
-	puntaje = 0
-	muerto = false
+	jugador = self
+	mapa = get_parent()
 	
 	# Detectar modo de juego
 	detect_game_mode()
 	
+	# Configurar audio
 	setup_footstep_audio()
 	
-	# Conectar señales solo si es multiplayer
+	# Conectar señales multiplayer
 	if is_multiplayer and WebSocketManager:
 		WebSocketManager.connect("game_data_received", _on_spell_received)
 		WebSocketManager.connect("game_ended", _on_opponent_won)
-		# Conectar también para manejar errores de send-game-data
+	
+	print("🎮 Player inicializado - Modo: ", "MULTIPLAYER" if is_multiplayer else "SINGLEPLAYER")
 
 func detect_game_mode():
 	if WebSocketManager and WebSocketManager.is_in_match():
@@ -68,95 +72,83 @@ func detect_game_mode():
 
 func setup_footstep_audio():
 	if footstep_audio:
-		footstep_audio.volume_db = -15.0  # Ajusta el volumen según necesites
+		footstep_audio.volume_db = -15.0
 		footstep_audio.autoplay = false
 		footstep_audio.stream_paused = false
 
-func _on_websocket_message(data: Dictionary):
-	# Interceptar mensajes para detectar errores de send-game-data
-	var event = data.get("event", "")
-	var status = data.get("status", "")
-	var msg = data.get("msg", "")
-	
-	if event == "send-game-data" and status == "ERROR":
-		print("⚠️ Error multiplayer detectado: ", msg)
-		multiplayer_errors += 1
-		
-		if multiplayer_errors >= 3:
-			print("🔄 Cambiando a modo SINGLEPLAYER")
-			is_multiplayer = false
-			multiplayer_errors = 0
-
-# Actualización del movimiento y las animaciones
+# === SISTEMA DE MOVIMIENTO Y ANIMACIÓN ===
 func _process(delta):
 	if muerto:
 		return
 	
-	velocity = Vector2()
-	if invisible():
-		invisibility_time -= delta
-	if invisibility_time <= 0:
-		invisibility_time = 5
-		jugador.collision_layer = 1|2|3
-		modulate.a = 1
-		potenciador_duplicado = preload("res://Escenas/potenciador.tscn").instantiate()
-		potenciador_duplicado.get_child(1).texture = get_sprite_pd()
-		mapa.add_child(potenciador_duplicado)
-		potenciador_duplicado.scale = Vector2(0.3, 0.3)
-		_set_next_spawn_point_pd()
-		invisibilidad_usada = false
+	# Procesar efectos temporales
+	process_temporary_effects(delta)
 	
-	if item_recogido:
-		item_recogido = false
-		item_duplicado = preload("res://Escenas/item.tscn").instantiate()
-		mapa.add_child(item_duplicado)
-		item_duplicado.get_child(1).texture = get_sprite_it()
+	# Sistema de invisibilidad
+	if invisibilidad_usada:
+		invisibility_time -= delta
+		if invisibility_time <= 0.0:
+			end_invisibility()
+	
+	# Movimiento
+	handle_movement()
+	
+	# Animaciones
+	update_animation()
+	
+	# Sonidos de pasos
+	handle_footstep_sounds(delta)
+	
+	# Movimiento físico
+	move_and_slide()
 
-		match item_duplicado.get_child(1).texture:
-			preload("res://assets/Imagenes/item_robable_01.png"):
-				item_duplicado.puntos = 200
-			preload("res://assets/Imagenes/item_robable_02.png"):
-				item_duplicado.puntos = 100
-			preload("res://assets/Imagenes/item_robable_03.png"):
-				item_duplicado.puntos = 150
-			preload("res://assets/Imagenes/item_robable_04.png"):
-				item_duplicado.puntos = 150
-			_:
-				print("Sprite item inválido")
-		
-		item_duplicado.scale = Vector2(0.2, 0.2)
-		_set_next_spawn_point_it()
-
-	# === CONTROLES CON CONFUSIÓN ===
+func handle_movement():
+	velocity = Vector2.ZERO
+	
+	# Determinar controles (normales o confundidos)
+	var right_pressed = Input.is_action_pressed("ui_right")
+	var left_pressed = Input.is_action_pressed("ui_left")
+	var down_pressed = Input.is_action_pressed("ui_down")
+	var up_pressed = Input.is_action_pressed("ui_up")
+	
 	if controls_confused:
 		# Controles invertidos
-		if Input.is_action_pressed("ui_right"):
-			velocity.x -= 1  # Invertido: derecha va a izquierda
-		if Input.is_action_pressed("ui_left"):
-			velocity.x += 1  # Invertido: izquierda va a derecha
-		if Input.is_action_pressed("ui_down"):
-			velocity.y -= 1  # Invertido: abajo va arriba
-		if Input.is_action_pressed("ui_up"):
-			velocity.y += 1  # Invertido: arriba va abajo
+		if right_pressed:
+			velocity.x = -1
+		if left_pressed:
+			velocity.x = 1
+		if down_pressed:
+			velocity.y = -1
+		if up_pressed:
+			velocity.y = 1
 	else:
 		# Controles normales
-		if Input.is_action_pressed("ui_right"):
-			velocity.x += 1
-		if Input.is_action_pressed("ui_left"):
-			velocity.x -= 1
-		if Input.is_action_pressed("ui_down"):
-			velocity.y += 1
-		if Input.is_action_pressed("ui_up"):
-			velocity.y -= 1
-		
+		if right_pressed:
+			velocity.x = 1
+		if left_pressed:
+			velocity.x = -1
+		if down_pressed:
+			velocity.y = 1
+		if up_pressed:
+			velocity.y = -1
+	
+	# Normalizar y aplicar velocidad
 	if velocity.length() > 0:
 		velocity = velocity.normalized() * speed
-	
-	update_animation()
 
-	handle_footstep_sounds(delta)
-
-	move_and_slide()
+func update_animation():
+	if velocity.length() > 0:
+		animated_sprite.play()
+		if velocity.x != 0:
+			animated_sprite.animation = "Derecha"
+			animated_sprite.flip_h = velocity.x < 0
+		elif velocity.y != 0:
+			if velocity.y > 0:
+				animated_sprite.animation = "Abajo"
+			else:
+				animated_sprite.animation = "Arriba"
+	else:
+		animated_sprite.stop()
 
 # === SISTEMA DE SONIDOS DE PASO ===
 func handle_footstep_sounds(delta):
@@ -165,13 +157,14 @@ func handle_footstep_sounds(delta):
 	
 	if is_walking:
 		footstep_timer += delta
+		
 		# Ajustar intervalo según velocidad
 		var current_interval = footstep_interval
-		if velocity.length() > 400:  # Corriendo rápido
+		if velocity.length() > 400:
 			current_interval = 0.25
-		elif velocity.length() > 300:  # Corriendo normal
+		elif velocity.length() > 300:
 			current_interval = 0.3
-		else:  # Caminando
+		else:
 			current_interval = 0.4
 		
 		if footstep_timer >= current_interval:
@@ -179,28 +172,22 @@ func handle_footstep_sounds(delta):
 			play_footstep_sound()
 	else:
 		footstep_timer = 0.0
-		# Si dejó de caminar, parar el audio gradualmente
 		if was_walking and footstep_audio and footstep_audio.playing:
 			stop_footstep_sound()
 
 func play_footstep_sound():
-	if footstep_audio and footstep_audio.stream:
-		# Solo reproducir si no está ya sonando para evitar solapamientos
-		if not footstep_audio.playing:
-			footstep_audio.play()
+	if footstep_audio and footstep_audio.stream and not footstep_audio.playing:
+		footstep_audio.play()
 
 func stop_footstep_sound():
 	if footstep_audio and footstep_audio.playing:
 		footstep_audio.stop()
 
-
-
 # === SISTEMA DE HECHIZOS ===
-
 func _input(event):
 	if muerto:
 		return
-		
+	
 	if event is InputEventKey and event.pressed:
 		match event.keycode:
 			KEY_Z:
@@ -211,22 +198,19 @@ func _input(event):
 				try_cast_spell_c()
 
 func try_cast_spell_z():
-	if is_multiplayer:
-		if puntaje < spell_z_cost:
-			print("❌ Hechizo Z - Puntos insuficientes. Necesitas: ", spell_z_cost, " | Tienes: ", puntaje)
-			return
-
+	if is_multiplayer and puntaje < spell_z_cost:
+		print("❌ Hechizo Z - Puntos insuficientes. Necesitas: ", spell_z_cost, " | Tienes: ", puntaje)
+		return
+	
 	if is_multiplayer:
 		send_spell("Z")
 		puntaje -= spell_z_cost
 		print("🔥 HECHIZO Z ENVIADO! Costo: ", spell_z_cost, " | Puntos restantes: ", puntaje)
-		
 
 func try_cast_spell_x():
-	if is_multiplayer:
-		if puntaje < spell_x_cost:
-			print("❌ Hechizo X - Puntos insuficientes. Necesitas: ", spell_x_cost, " | Tienes: ", puntaje)
-			return
+	if is_multiplayer and puntaje < spell_x_cost:
+		print("❌ Hechizo X - Puntos insuficientes. Necesitas: ", spell_x_cost, " | Tienes: ", puntaje)
+		return
 	
 	if is_multiplayer:
 		send_spell("X")
@@ -234,59 +218,44 @@ func try_cast_spell_x():
 		print("⚡ HECHIZO X ENVIADO! Costo: ", spell_x_cost, " | Puntos restantes: ", puntaje)
 
 func try_cast_spell_c():
-	if is_multiplayer:
-		if puntaje < spell_c_cost:
-			print("❌ Hechizo C - Puntos insuficientes. Necesitas: ", spell_c_cost, " | Tienes: ", puntaje)
-			return
-
+	if is_multiplayer and puntaje < spell_c_cost:
+		print("❌ Hechizo C - Puntos insuficientes. Necesitas: ", spell_c_cost, " | Tienes: ", puntaje)
+		return
+	
 	if is_multiplayer:
 		send_spell("C")
 		puntaje -= spell_c_cost
 		print("💥 HECHIZO C ENVIADO! Costo: ", spell_c_cost, " | Puntos restantes: ", puntaje)
 
 func send_spell(spell_type: String):
-	# Solo enviar en modo multiplayer
-	if not is_multiplayer:
+	if not is_multiplayer or not WebSocketManager:
 		return
 	
-	if WebSocketManager:
-		var spell_data = {
-			"spell": spell_type
-		}
-		
-		WebSocketManager.send_game_data(spell_data)
-		print("📡 Hechizo ", spell_type, " enviado: ", spell_data)
-		
-		# Efecto visual local
-		if spell_type != "death":
-			show_spell_cast_effect(spell_type)
-	else:
-		print("⚠️ WebSocketManager no disponible")
+	var spell_data = {"spell": spell_type}
+	WebSocketManager.send_game_data(spell_data)
+	print("📡 Hechizo ", spell_type, " enviado: ", spell_data)
+	
+	if spell_type != "death":
+		show_spell_cast_effect(spell_type)
 
 func show_spell_cast_effect(spell: String):
+	var effect_color = Color.WHITE
 	match spell:
 		"Z":
-			modulate = Color.BLUE
+			effect_color = Color.BLUE
 		"X":
-			modulate = Color.PURPLE
+			effect_color = Color.PURPLE
 		"C":
-			modulate = Color.RED
+			effect_color = Color.RED
 	
-	var timer = Timer.new()
-	timer.wait_time = 1.0
-	timer.one_shot = true
-	timer.timeout.connect(func(): modulate = Color.WHITE)
-	add_child(timer)
-	timer.start()
+	apply_temporary_effect("spell_cast", 1.0, {"color": effect_color})
 
-# === RECIBIR HECHIZOS DEL OPONENTE (SOLO MULTIPLAYER) ===
-
+# === SISTEMA DE EFECTOS RECIBIDOS ===
 func _on_spell_received(data: Dictionary):
 	if not is_multiplayer:
 		return
-		
-	var spell = data.get("spell", "")
 	
+	var spell = data.get("spell", "")
 	if spell != "":
 		print("🎯 Hechizo recibido del oponente: ", spell)
 		apply_spell_effect(spell)
@@ -301,16 +270,41 @@ func apply_spell_effect(spell: String):
 			apply_spell_c_effect()
 		"death":
 			apply_opponent_death_notification()
-		_:
-			print("⚠️ Hechizo desconocido: ", spell)
+
+func apply_spell_z_effect():
+	print("🐌 Has sido ralentizado por el oponente")
+	var slow_amount = 200.0
+	var original_speed = speed
+	speed = max(100, speed - slow_amount)
+	
+	apply_temporary_effect("slowness", 8.0, {
+		"original_speed": original_speed,
+		"color": Color.CYAN
+	})
+
+func apply_spell_x_effect():
+	print("🌀 Tus controles han sido confundidos por el oponente")
+	controls_confused = true
+	
+	apply_temporary_effect("confusion", 10.0, {
+		"color": Color.MAGENTA
+	})
+
+func apply_spell_c_effect():
+	print("😵 Aturdido por el rival")
+	var original_speed = speed
+	speed = 0
+	
+	apply_temporary_effect("stun", 4.0, {
+		"original_speed": original_speed,
+		"color": Color.ORCHID
+	})
 
 func apply_opponent_death_notification():
-	# Solo en multiplayer
 	if not is_multiplayer:
 		return
-		
-	print("🎉 El oponente ha muerto - ¡HAS GANADO!")
 	
+	print("🎉 El oponente ha muerto - ¡HAS GANADO!")
 	game = true
 	muerto = false
 	
@@ -323,114 +317,101 @@ func apply_opponent_death_notification():
 	go_to_victory_scene()
 
 func _on_opponent_won(data: Dictionary):
-	# Solo en multiplayer
 	if not is_multiplayer:
 		return
-		
-	print("😵 El oponente ha ganado la partida")
 	
+	print("😵 El oponente ha ganado la partida")
 	muerto = true
 	game = true
-	
 	go_to_defeat_scene()
 
-func apply_spell_z_effect():
-	print("🐌 Has sido ralentizado por el oponente")
+# === SISTEMA DE EFECTOS TEMPORALES ===
+func apply_temporary_effect(effect_type: String, duration: float, data: Dictionary = {}):
+	var effect = {
+		"type": effect_type,
+		"duration": duration,
+		"data": data
+	}
 	
-	var original_speed = speed
-	speed = max(100, speed - 200)
-	modulate = Color.CYAN
-	var timer = Timer.new()
-	timer.wait_time = 8.0
-	timer.one_shot = true
-	timer.timeout.connect(func(): 
-		if not muerto:
-			speed = original_speed
-			modulate = Color.WHITE
+	active_effects.append(effect)
+	
+	# Aplicar efecto visual si tiene color
+	if data.has("color"):
+		modulate = data["color"]
+
+func process_temporary_effects(delta):
+	for i in range(active_effects.size() - 1, -1, -1):
+		var effect = active_effects[i]
+		effect["duration"] -= delta
+		
+		if effect["duration"] <= 0:
+			end_temporary_effect(effect)
+			active_effects.remove_at(i)
+
+func end_temporary_effect(effect: Dictionary):
+	match effect["type"]:
+		"slowness":
+			if effect["data"].has("original_speed"):
+				speed = effect["data"]["original_speed"]
 			print("⭐ Efecto de ralentización terminado")
-	)
-	add_child(timer)
-	timer.start()
-
-func apply_spell_c_effect():
-	print("😵 Aturdido por el rival papu")
-	
-	var original_speed = speed
-	speed = 0
-	modulate = Color.ORCHID
-	var timer = Timer.new()
-	timer.wait_time = 4.0
-	timer.one_shot = true
-	timer.timeout.connect(func(): 
-		if not muerto:
-			speed = original_speed
-			modulate = Color.WHITE
-			print("Aturdision complertada")
-	)
-	add_child(timer)
-	timer.start()
-
-func apply_spell_x_effect():
-	print("🌀 Tus controles han sido confundidos por el oponente")
-	
-	controls_confused = true
-	modulate = Color.MAGENTA
-	var timer = Timer.new()
-	timer.wait_time = 10.0
-	timer.one_shot = true
-	timer.timeout.connect(func(): 
-		if not muerto:
+		
+		"confusion":
 			controls_confused = false
-			modulate = Color.WHITE
 			print("⭐ Efecto de confusión terminado")
-	)
-	add_child(timer)
-	timer.start()
+		
+		"stun":
+			if effect["data"].has("original_speed"):
+				speed = effect["data"]["original_speed"]
+			print("⭐ Efecto de aturdimiento terminado")
+		
+		"spell_cast":
+			pass  # Solo efecto visual
+	
+	# Restaurar color si no hay otros efectos con color
+	var has_color_effect = false
+	for active_effect in active_effects:
+		if active_effect["data"].has("color"):
+			has_color_effect = true
+			break
+	
+	if not has_color_effect:
+		modulate = Color.WHITE
 
-# === FUNCIONES ORIGINALES ===
-
-func update_animation():
-	if velocity.length() > 0:
-		animated_sprite.play()
-		if velocity.x != 0:
-			animated_sprite.animation = "Derecha" 
-			animated_sprite.flip_h = velocity.x < 0
-		elif velocity.y != 0:
-			if velocity.y > 0:
-				animated_sprite.animation = "Abajo"
-			else:
-				animated_sprite.animation = "Arriba"
-	else:
-		animated_sprite.stop()
-
-func aumentar_puntaje(cantidad):
+# === FUNCIONES DE STATS Y EFECTOS ===
+func aumentar_puntaje(cantidad: int):
 	puntaje += cantidad
 	print("Puntaje actual: ", puntaje)
 	
 	if is_multiplayer:
+		print("  Hechizos disponibles:")
 		if puntaje >= spell_z_cost:
-			print("  ✅ Z disponible (", spell_z_cost, " pts)")
+			print("    ✅ Z (", spell_z_cost, " pts)")
 		if puntaje >= spell_x_cost:
-			print("  ✅ X disponible (", spell_x_cost, " pts)")
+			print("    ✅ X (", spell_x_cost, " pts)")
 		if puntaje >= spell_c_cost:
-			print("  ✅ C disponible (", spell_c_cost, " pts)")
-
+			print("    ✅ C (", spell_c_cost, " pts)")
 	
+	# Verificar victoria por puntaje
 	if puntaje >= puntaje_win:
 		game = true
 		print("¡Ganaste por puntaje!")
 		
-		if is_multiplayer:
-			# Multiplayer: enviar finish-game
-			if WebSocketManager:
-				WebSocketManager.finish_game({
-					"winner_reason": "reached_target_score",
-					"final_score": puntaje
-				})
+		if is_multiplayer and WebSocketManager:
+			WebSocketManager.finish_game({
+				"winner_reason": "reached_target_score",
+				"final_score": puntaje
+			})
 		
 		go_to_victory_scene()
 
-func perder_salud(cantidad):
+func aumentar_velocidad(cantidad: float):
+	if muerto:
+		return
+	
+	speed = min(speed + cantidad, velMax)
+	print("Velocidad aumentada. Velocidad actual: ", speed)
+
+func perder_salud(cantidad: int):
 	salud -= cantidad
 	print("Salud actual: ", salud)
 	
@@ -438,16 +419,53 @@ func perder_salud(cantidad):
 		muerto = true
 		print("💀 Has muerto!")
 		
-		if is_multiplayer:
-			# Multiplayer: avisar muerte al oponente
-			if WebSocketManager:
-				send_spell("death")
-				print("📡 Señal de muerte enviada al oponente")
+		if is_multiplayer and WebSocketManager:
+			send_spell("death")
+			print("📡 Señal de muerte enviada al oponente")
 		
 		go_to_defeat_scene()
 
-# === FUNCIONES DE NAVEGACIÓN SEGÚN MODO ===
+func restaurar_salud(cantidad: int):
+	if muerto:
+		return
+	
+	salud = min(salud + cantidad, max_salud)
+	print("Salud restaurada. Salud actual: ", salud)
 
+func aplicar_invisibilidad(duration: float, alpha: float):
+	if muerto:
+		return
+	
+	collision_layer = 0
+	modulate.a = alpha
+	invisibilidad_usada = true
+	invisibility_time = duration
+	invisibility_duration = duration
+	invisibility_alpha = alpha
+	
+	print("Invisibilidad aplicada por: ", duration, " segundos")
+
+func end_invisibility():
+	invisibility_time = 0.0
+	invisibilidad_usada = false
+	collision_layer = 1|2|3
+	
+	# Restaurar alpha solo si no hay otros efectos
+	var has_color_effect = false
+	for effect in active_effects:
+		if effect["data"].has("color"):
+			has_color_effect = true
+			break
+	
+	if not has_color_effect:
+		modulate.a = 1.0
+	
+	print("Invisibilidad terminada")
+
+func invisible() -> bool:
+	return invisibilidad_usada
+
+# === FUNCIONES DE NAVEGACIÓN ===
 func go_to_victory_scene():
 	if is_multiplayer:
 		print("🎯 Cargando pantalla de victoria MULTIPLAYER")
@@ -464,64 +482,25 @@ func go_to_defeat_scene():
 		print("💀 Cargando pantalla de derrota SINGLEPLAYER")
 		get_tree().change_scene_to_file("res://Escenas/defeat_screen.tscn")
 
-func aumentar_velocidad(cantidad):
-	if muerto or speed >= velMax:
-		speed = velMax
-		return
-	speed += cantidad
-	potenciador_duplicado = preload("res://Escenas/potenciador.tscn").instantiate()
-	potenciador_duplicado.get_child(1).texture = get_sprite_pd()
-	mapa.add_child(potenciador_duplicado)
-	potenciador_duplicado.scale = Vector2(0.3, 0.3)
-	_set_next_spawn_point_pd()
-	print("Velocidad actual: ", speed)
-
-#hace que el jugador sea indetectable y cambia la opacidad del sprite
-func transparentar(transparencia):
-	jugador.collision_layer = 0
-	modulate.a = transparencia
-	invisibilidad_usada = true
-
-func invisible():
-	return invisibilidad_usada
+# === FUNCIONES DE COMPATIBILIDAD (para items existentes) ===
+func transparentar(transparencia: float):
+	aplicar_invisibilidad(invisibility_duration, transparencia)
 
 func recoger():
-	item_recogido = true
+	# Función de compatibilidad - ahora manejado por el sistema de items
+	print("Item recogido (sistema legacy)")
 
-func _set_next_spawn_point_pd():
-	if spawn_points_pd.size() == 0:
-		return
-	var new_index = randi_range(0, spawn_points_pd.size()-1)
-	if spawn_index != new_index:
-		spawn_index = new_index
-	else:
-		spawn_index -= 2
+# === MANEJO DE ERRORES MULTIPLAYER ===
+func _on_websocket_message(data: Dictionary):
+	var event = data.get("event", "")
+	var status = data.get("status", "")
+	var msg = data.get("msg", "")
 	
-	var spawn_node = get_node_or_null(spawn_points_pd[spawn_index])
-	if spawn_node:
-		potenciador_duplicado.position = spawn_node.global_position
-
-func _set_next_spawn_point_it():
-	if spawn_points_it.size() == 0:
-		return
-	var new_index = randi_range(0, spawn_points_it.size()-1)
-	if spawn_index != new_index:
-		spawn_index = new_index
-	else:
-		spawn_index -= 2
-	
-	var spawn_node = get_node_or_null(spawn_points_it[spawn_index])
-	if spawn_node:
-		item_duplicado.position = spawn_node.global_position
-
-func get_sprite_it():
-	if sprites_it.size() == 0:
-		return
-	var index = randi_range(0, sprites_it.size()-1)
-	return load(sprites_it[index])
-
-func get_sprite_pd():
-	if sprites_pd.size() == 0:
-		return
-	var index = randi_range(0, sprites_pd.size()-1)
-	return load(sprites_pd[index])
+	if event == "send-game-data" and status == "ERROR":
+		print("⚠️ Error multiplayer detectado: ", msg)
+		multiplayer_errors += 1
+		
+		if multiplayer_errors >= 3:
+			print("🔄 Cambiando a modo SINGLEPLAYER")
+			is_multiplayer = false
+			multiplayer_errors = 0

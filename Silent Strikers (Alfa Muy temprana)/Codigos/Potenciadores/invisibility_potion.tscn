@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3 uid="uid://bh0g6pw6ph2ic"]
+
+[ext_resource type="Texture2D" uid="uid://mdsb8my7ey2q" path="res://assets/Imagenes/Inv.png" id="1_01p7g"]
+[ext_resource type="Script" uid="uid://cgygg5dm3f3k0" path="res://Codigos/Potenciadores/invisibility_potion.gd" id="1_u3d0q"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_u3d0q"]
+size = Vector2(253, 357)
+
+[node name="InvisibilityPotion" type="Node2D"]
+
+[node name="Area2D" type="Area2D" parent="."]
+script = ExtResource("1_u3d0q")
+
+[node name="Sprite2D" type="Sprite2D" parent="Area2D"]
+texture = ExtResource("1_01p7g")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(3.5, 29.5)
+shape = SubResource("RectangleShape2D_u3d0q")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="Area2D"]

@@ -1,4 +1,4 @@
-[gd_scene load_steps=53 format=4 uid="uid://dbicubno0126o"]
+[gd_scene load_steps=51 format=4 uid="uid://dbicubno0126o"]
 
 [ext_resource type="Texture2D" uid="uid://d1ugwl33ka3du" path="res://assets/Tiles mapas/tileset2.png" id="1_my4lf"]
 [ext_resource type="PackedScene" uid="uid://drs5cxv35r63x" path="res://Escenas/Player.tscn" id="1_n87ba"]
@@ -27,25 +27,11 @@
 [ext_resource type="Texture2D" uid="uid://cupu8hi6ix3lq" path="res://assets/Sprites/UIs/vida.png" id="25_ua2ai"]
 [ext_resource type="PackedScene" uid="uid://d1ouhuslclwme" path="res://Escenas/Guardia.tscn" id="26_ua2ai"]
 
-[sub_resource type="NavigationPolygon" id="NavigationPolygon_my4lf"]
-vertices = PackedVector2Array(23, 23, -23, 23, -23, -23, 23, -23)
-polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
-outlines = Array[PackedVector2Array]([PackedVector2Array(-23, -23, 23, -23, 23, 23, -23, 23)])
-agent_radius = 0.0
-
-[sub_resource type="NavigationPolygon" id="NavigationPolygon_087d1"]
-vertices = PackedVector2Array(23, 23, -23, 23, -23, -23, 23, -23)
-polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
-outlines = Array[PackedVector2Array]([PackedVector2Array(-23, -23, 23, -23, 23, 23, -23, 23)])
-agent_radius = 0.0
-
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_n87ba"]
 texture = ExtResource("1_my4lf")
 texture_region_size = Vector2i(46, 46)
 2:0/0 = 0
-2:0/0/navigation_layer_0/polygon = SubResource("NavigationPolygon_my4lf")
 3:0/0 = 0
-3:0/0/navigation_layer_0/polygon = SubResource("NavigationPolygon_087d1")
 5:1/0 = 0
 5:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-23, -23, 23, -23, 23, 23, -23, 23)
 6:1/0 = 0
@@ -1617,27 +1603,6 @@ texture_region_size = Vector2i(48, 48)
 13:88/0 = 0
 14:88/0 = 0
 15:88/0 = 0
-9:89/0 = 0
-10:89/0 = 0
-11:89/0 = 0
-12:89/0 = 0
-13:89/0 = 0
-14:89/0 = 0
-15:89/0 = 0
-9:90/0 = 0
-10:90/0 = 0
-11:90/0 = 0
-12:90/0 = 0
-13:90/0 = 0
-14:90/0 = 0
-15:90/0 = 0
-9:91/0 = 0
-10:91/0 = 0
-11:91/0 = 0
-12:91/0 = 0
-13:91/0 = 0
-14:91/0 = 0
-15:91/0 = 0
 7:46/0 = 0
 8:46/0 = 0
 9:46/0 = 0
@@ -2200,7 +2165,6 @@ texture_region_size = Vector2i(46, 46)
 tile_size = Vector2i(46, 46)
 physics_layer_0/collision_layer = 1
 physics_layer_0/collision_mask = 3
-navigation_layer_0/layers = 3
 sources/2 = SubResource("TileSetAtlasSource_0tfnx")
 sources/1 = SubResource("TileSetAtlasSource_ua2ai")
 sources/5 = SubResource("TileSetAtlasSource_dpih6")
@@ -2273,8 +2237,6 @@ zoom = Vector2(0.1, 0.1)
 [node name="Player" parent="." instance=ExtResource("1_n87ba")]
 z_index = 1
 position = Vector2(266, 252)
-spawn_points_it = Array[NodePath]([NodePath("../Marker2D"), NodePath("../Marker2D2"), NodePath("../Marker2D3"), NodePath("../Marker2D4"), NodePath("../Marker2D5")])
-spawn_points_pd = Array[NodePath]([NodePath("../Marker2D6"), NodePath("../Marker2D7"), NodePath("../Marker2D8")])
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2(-6, 3)
