@@ -8,7 +8,7 @@ var initial_speed: float = 500.0
 var salud: int = 3
 var max_salud: int = 3
 var muerto: bool = false
-var puntaje_win: int = 2500
+var puntaje_win: int = 1000
 var game: bool = false
 
 # === SISTEMA DE INVISIBILIDAD ===

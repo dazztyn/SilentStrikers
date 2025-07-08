@@ -45,6 +45,12 @@ func update_hud():# Actualiza las etiquetas del HUD con los valores del jugador
 		barra_de_puntaje_1.value = 150
 		barra_de_puntaje_2.value = 300
 		barra_de_puntaje_3.value = player.puntaje - 450
+	elif player.puntaje > 1000:
+		barra_de_puntaje_1.value = 150
+		barra_de_puntaje_2.value = 300
+		barra_de_puntaje_3 = 450
+		
+		
 	if player.salud == 2:
 		oportunidad_3.value = 0
 	elif player.salud == 1:

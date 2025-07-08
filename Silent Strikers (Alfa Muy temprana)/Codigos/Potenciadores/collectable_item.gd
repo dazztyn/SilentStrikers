@@ -17,13 +17,13 @@ var collectable_configs = {
 		"name": "Computadora",
 		"description": "Una computadora valiosa",
 		"texture_path": "res://assets/Imagenes/item_robable_04.png",
-		"score": 300
+		"score": 150
 	},
 	CollectableType.MONEY_STACK: {
 		"name": "Fajo de Dinero",
 		"description": "Un fajo de billetes",
 		"texture_path": "res://assets/Imagenes/item_robable_02.png",
-		"score": 150
+		"score": 50
 	},
 	CollectableType.BOWL: {
 		"name": "Tazón",
@@ -35,7 +35,7 @@ var collectable_configs = {
 		"name": "Lingotes de Oro",
 		"description": "Lingotes de oro puro",
 		"texture_path": "res://assets/Imagenes/item_robable_01.png",
-		"score": 500
+		"score": 250
 	}
 }
 

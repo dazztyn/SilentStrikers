@@ -2234,17 +2234,13 @@ agent_radius = 50.0
 
 [node name="Testmapa2" type="Node2D"]
 
-[node name="Camera2D2" type="Camera2D" parent="."]
-position = Vector2(260, 255)
-zoom = Vector2(0.1, 0.1)
-
 [node name="Player" parent="." instance=ExtResource("1_n87ba")]
 z_index = 1
 position = Vector2(266, 252)
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2(-6, 3)
-zoom = Vector2(0.4, 0.4)
+zoom = Vector2(2, 2)
 
 [node name="Tiles" type="Node2D" parent="."]
 
