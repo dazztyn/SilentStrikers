@@ -1,4 +1,4 @@
-[gd_scene load_steps=51 format=4 uid="uid://dbicubno0126o"]
+[gd_scene load_steps=55 format=4 uid="uid://dbicubno0126o"]
 
 [ext_resource type="Texture2D" uid="uid://d1ugwl33ka3du" path="res://assets/Tiles mapas/tileset2.png" id="1_my4lf"]
 [ext_resource type="PackedScene" uid="uid://drs5cxv35r63x" path="res://Escenas/Player.tscn" id="1_n87ba"]
@@ -26,6 +26,10 @@
 [ext_resource type="Texture2D" uid="uid://c1d04k1ykdmrx" path="res://assets/Sprites/sprits de prueba/New Piskel (10).png" id="25_dpih6"]
 [ext_resource type="Texture2D" uid="uid://cupu8hi6ix3lq" path="res://assets/Sprites/UIs/vida.png" id="25_ua2ai"]
 [ext_resource type="PackedScene" uid="uid://d1ouhuslclwme" path="res://Escenas/Guardia.tscn" id="26_ua2ai"]
+[ext_resource type="Script" uid="uid://c4p4olvvgb1sl" path="res://Codigos/Potenciadores/dual_item_spawner.gd" id="27_qsi44"]
+[ext_resource type="PackedScene" uid="uid://dm0spd0ho6h4o" path="res://Codigos/Potenciadores/CollectableItem.tscn" id="28_q4r8g"]
+[ext_resource type="PackedScene" uid="uid://bqngjaxqklbf" path="res://Codigos/Potenciadores/speed_potion.tscn" id="29_0tfnx"]
+[ext_resource type="PackedScene" uid="uid://deiwkfa3o8irb" path="res://Codigos/Potenciadores/invisibility_potion.tscn" id="30_smsy2"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_n87ba"]
 texture = ExtResource("1_my4lf")
@@ -2447,6 +2451,7 @@ navigation_region = NodePath("../PatrullaGuardia_1")
 search_radius = 50.0
 
 [node name="PatrullaGuardia_1" type="NavigationRegion2D" parent="."]
+visible = false
 position = Vector2(1328, -58)
 navigation_polygon = SubResource("NavigationPolygon_dh30r")
 
@@ -2455,6 +2460,7 @@ position = Vector2(2322, 1968)
 navigation_region = NodePath("../PatrullaGuardia_2")
 
 [node name="PatrullaGuardia_2" type="NavigationRegion2D" parent="."]
+visible = false
 position = Vector2(-178, 1634)
 navigation_polygon = SubResource("NavigationPolygon_shtlw")
 
@@ -2464,6 +2470,7 @@ navigation_region = NodePath("../PatrullaGuardia_3")
 search_radius = 300.0
 
 [node name="PatrullaGuardia_3" type="NavigationRegion2D" parent="."]
+visible = false
 position = Vector2(3373, 923)
 navigation_polygon = SubResource("NavigationPolygon_fju71")
 
@@ -2472,6 +2479,7 @@ position = Vector2(5017, 247)
 navigation_region = NodePath("../PatrullaGuardia_4")
 
 [node name="PatrullaGuardia_4" type="NavigationRegion2D" parent="."]
+visible = false
 position = Vector2(2893, -876)
 navigation_polygon = SubResource("NavigationPolygon_ua2ai")
 
@@ -2480,6 +2488,7 @@ position = Vector2(2371, -2197)
 navigation_region = NodePath("../PatrullaGuardia_5")
 
 [node name="PatrullaGuardia_5" type="NavigationRegion2D" parent="."]
+visible = false
 position = Vector2(2989, 628)
 navigation_polygon = SubResource("NavigationPolygon_qsi44")
 
@@ -2488,6 +2497,7 @@ position = Vector2(2961, -1137)
 navigation_region = NodePath("../PatrullaGuardia_6")
 
 [node name="PatrullaGuardia_6" type="NavigationRegion2D" parent="."]
+visible = false
 position = Vector2(5950, -509)
 navigation_polygon = SubResource("NavigationPolygon_q4r8g")
 
@@ -2496,6 +2506,7 @@ position = Vector2(6136, -2220)
 navigation_region = NodePath("../PatrullaGuardia_7")
 
 [node name="PatrullaGuardia_7" type="NavigationRegion2D" parent="."]
+visible = false
 position = Vector2(11900, -1018)
 navigation_polygon = SubResource("NavigationPolygon_0tfnx")
 
@@ -2504,6 +2515,7 @@ position = Vector2(6150, 188)
 navigation_region = NodePath("../PatrullaGuardia_8")
 
 [node name="PatrullaGuardia_8" type="NavigationRegion2D" parent="."]
+visible = false
 position = Vector2(19945, -1401)
 navigation_polygon = SubResource("NavigationPolygon_smsy2")
 
@@ -2512,5 +2524,71 @@ position = Vector2(8241, -61)
 navigation_region = NodePath("../PatrullaGuardia_9")
 
 [node name="PatrullaGuardia_9" type="NavigationRegion2D" parent="."]
+visible = false
 position = Vector2(39890, -2802)
 navigation_polygon = SubResource("NavigationPolygon_6c1rx")
+
+[node name="DualItemSpawner" type="Node2D" parent="." node_paths=PackedStringArray("spawn_points")]
+script = ExtResource("27_qsi44")
+spawn_points = [NodePath("Ubi"), NodePath("Ubi14"), NodePath("Ubi17"), NodePath("Ubi18"), NodePath("Ubi15"), NodePath("Ubi16"), NodePath("Ubi2"), NodePath("Ubi3"), NodePath("Ubi4"), NodePath("Ubi5"), NodePath("Ubi6"), NodePath("Ubi7"), NodePath("Ubi8"), NodePath("Ubi9"), NodePath("Ubi10"), NodePath("Ubi11"), NodePath("Ubi12"), NodePath("Ubi13")]
+collectable_scene = ExtResource("28_q4r8g")
+speed_potion_scene = ExtResource("29_0tfnx")
+invisibility_potion_scene = ExtResource("30_smsy2")
+max_collectables = 10
+max_potions = 5
+collectable_spawn_chance = 60
+potion_spawn_chance = 40
+
+[node name="Ubi" type="Node2D" parent="DualItemSpawner"]
+position = Vector2(4077, -1023)
+
+[node name="Ubi14" type="Node2D" parent="DualItemSpawner"]
+position = Vector2(7952, -1480)
+
+[node name="Ubi17" type="Node2D" parent="DualItemSpawner"]
+position = Vector2(8403, 1271)
+
+[node name="Ubi18" type="Node2D" parent="DualItemSpawner"]
+position = Vector2(8577, -175)
+
+[node name="Ubi15" type="Node2D" parent="DualItemSpawner"]
+position = Vector2(5214, -2537)
+
+[node name="Ubi16" type="Node2D" parent="DualItemSpawner"]
+position = Vector2(8140, -2268)
+
+[node name="Ubi2" type="Node2D" parent="DualItemSpawner"]
+position = Vector2(7871, -101)
+
+[node name="Ubi3" type="Node2D" parent="DualItemSpawner"]
+position = Vector2(6781, 2139)
+
+[node name="Ubi4" type="Node2D" parent="DualItemSpawner"]
+position = Vector2(3229, 121)
+
+[node name="Ubi5" type="Node2D" parent="DualItemSpawner"]
+position = Vector2(6102, -834)
+
+[node name="Ubi6" type="Node2D" parent="DualItemSpawner"]
+position = Vector2(2435, 2503)
+
+[node name="Ubi7" type="Node2D" parent="DualItemSpawner"]
+position = Vector2(3572, 1675)
+
+[node name="Ubi8" type="Node2D" parent="DualItemSpawner"]
+position = Vector2(1420, 1729)
+
+[node name="Ubi9" type="Node2D" parent="DualItemSpawner"]
+position = Vector2(2193, 659)
+
+[node name="Ubi10" type="Node2D" parent="DualItemSpawner"]
+position = Vector2(1810, -1110)
+
+[node name="Ubi11" type="Node2D" parent="DualItemSpawner"]
+position = Vector2(4803, 27)
+
+[node name="Ubi12" type="Node2D" parent="DualItemSpawner"]
+position = Vector2(2415, -2563)
+
+[node name="Ubi13" type="Node2D" parent="DualItemSpawner"]
+position = Vector2(3404, -2550)
