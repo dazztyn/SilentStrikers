@@ -1,4 +1,4 @@
-[gd_scene load_steps=48 format=4 uid="uid://d4lyib7n06dms"]
+[gd_scene load_steps=50 format=4 uid="uid://d4lyib7n06dms"]
 
 [ext_resource type="Texture2D" uid="uid://brmwx5ulu8t76" path="res://assets/Tiles mapas/tileset-mapa1-brillo.png" id="1_vqv8r"]
 [ext_resource type="Texture2D" uid="uid://cuecitndoyo4b" path="res://assets/Tiles mapas/Experimental.png" id="2_cn7dx"]
@@ -19,6 +19,8 @@
 [ext_resource type="Texture2D" uid="uid://cupu8hi6ix3lq" path="res://assets/Sprites/UIs/vida.png" id="16_8kqfa"]
 [ext_resource type="PackedScene" uid="uid://b2d1lacrstmpj" path="res://Escenas/item.tscn" id="16_k1w2r"]
 [ext_resource type="PackedScene" uid="uid://jyu2vbo07tku" path="res://Escenas/potenciador.tscn" id="17_5jo1w"]
+[ext_resource type="PackedScene" uid="uid://c4thuj5ju7mw3" path="res://Escenas/TP.tscn" id="20_5hwbx"]
+[ext_resource type="Script" uid="uid://bup3aefmj2dhp" path="res://Codigos/tp2.gd" id="21_nofbg"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_qdyep"]
 vertices = PackedVector2Array(23, 23, -23, 23, -23, -23, 23, -23)
@@ -5183,3 +5185,10 @@ position = Vector2(544, 2978)
 scale = Vector2(0.3, 0.3)
 collision_layer = 2
 collision_mask = 3
+
+[node name="Tp" parent="." instance=ExtResource("20_5hwbx")]
+position = Vector2(1913, -371)
+
+[node name="Tp2" parent="." instance=ExtResource("20_5hwbx")]
+position = Vector2(1628, 2323)
+script = ExtResource("21_nofbg")
