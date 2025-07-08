@@ -34,6 +34,13 @@ var search_timer = 0.0
 var chase_duration = 8.0
 var chasing_timer = 0.0
 
+## --- Optimización de patrullaje ---
+var patrol_wait_time = 0.3  # Tiempo de espera en puntos de patrulla
+var patrol_wait_timer = 0.0
+var cached_patrol_points: Array[Vector2] = []
+var current_patrol_index = 0
+var navigation_bounds_cached = false
+
 func _ready():
 	player = Singleton.devolver_player()
 	add_to_group("GuardiasM1")
@@ -62,15 +69,17 @@ func generar_cono_de_vision(fov_degrees := 90, radio := 200.0, resolucion := 12)
 
 func _physics_process(delta: float):
 	hit_cooldown -= delta
-	forward = (navigation_agent.get_next_path_position() - global_position).normalized()
-	if forward == Vector2.ZERO:
+	
+	# Calcular forward solo si es necesario
+	if not navigation_agent.is_navigation_finished():
+		forward = (navigation_agent.get_next_path_position() - global_position).normalized()
+	elif forward == Vector2.ZERO:
 		forward = Vector2.RIGHT.rotated(rotation)
-		
-	flashlight.rotation = rotation2
-	flashlight.position = Vector2(197, 30).rotated(rotation2) # cambia 16 según qué tan lejos está la linterna de la mano
+	
+	# Optimizar posicionamiento de linterna
+	_update_flashlight_position()
 
-
-
+	# Procesar estado actual
 	match current_state:
 		State.PATROLLING:
 			speed = 200
@@ -82,9 +91,25 @@ func _physics_process(delta: float):
 			speed = 200
 			_process_searching(delta)
 	
+	# Verificar línea de visión solo si el jugador está en el cono
 	if player_in_vision_cone:
 		check_line_of_sight()
 
+	# Optimizar animaciones y rotaciones
+	_update_movement_animations()
+	
+	# Verificar daño al jugador
+	_check_player_damage()
+	
+	move_and_slide()
+
+func _update_flashlight_position():
+	"""Actualiza la posición de la linterna de forma optimizada"""
+	flashlight.rotation = rotation2
+	flashlight.position = Vector2(197, 30).rotated(rotation2)
+
+func _update_movement_animations():
+	"""Actualiza animaciones y rotaciones basadas en el movimiento"""
 	var move_dir = velocity.normalized()
 	if move_dir != Vector2.ZERO:
 		rotation2 = move_dir.angle()
@@ -93,30 +118,38 @@ func _physics_process(delta: float):
 		flashlight.rotation = rotation2
 
 		var horizontal = false
-		if move_dir.x > 0 and (move_dir.y > -0.3 and move_dir.y < 0.3):
+		if move_dir.x > 0 and abs(move_dir.y) < 0.3:
 			animations.play("Derecha")
 			horizontal = true
-		elif move_dir.x < 0 and (move_dir.y > -0.3 and move_dir.y < 0.3):
+		elif move_dir.x < 0 and abs(move_dir.y) < 0.3:
 			animations.play("Izquierda")
 			horizontal = true
 			flashlight.position = Vector2(197, 30-60).rotated(rotation2)
+		
 		if not horizontal:
-			
 			if move_dir.y > 0:
 				animations.play("Abajo")
 			elif move_dir.y < 0:
 				animations.play("Arriba")
 				flashlight.position = Vector2(197-30, 30).rotated(rotation2)
 
+func _check_player_damage():
+	"""Verifica si el jugador debe recibir daño"""
 	if abs(player.position.x - position.x) < 70 and abs(player.position.y - position.y) < 120 and hit_cooldown < 0 and not player.invisible():
 		player.perder_salud(1)
 		hit_cooldown = 1.5
-	
-	move_and_slide()
 
 func _process_patrolling(delta):
 	if navigation_agent.is_navigation_finished():
-		_set_next_patrol_point()
+		# Esperar en el punto de patrulla antes de moverse al siguiente
+		patrol_wait_timer += delta
+		if patrol_wait_timer >= patrol_wait_time:
+			patrol_wait_timer = 0.0
+			_set_next_patrol_point()
+	else:
+		# Resetear el timer si nos estamos moviendo
+		patrol_wait_timer = 0.0
+	
 	_update_navigation_velocity(delta)
 
 func _process_chasing(delta):
@@ -128,12 +161,27 @@ func _process_searching(delta):
 	search_timer -= delta
 	if search_timer <= 0.0:
 		set_state(State.PATROLLING)
+		patrol_wait_timer = 0.0  # Resetear timer de patrulla
 		_set_next_patrol_point()
 		return
+	
 	if navigation_agent.is_navigation_finished():
-		var random_direction = Vector2.RIGHT.rotated(randf_range(0, TAU))
-		var random_point = last_known_player_position + random_direction * randf_range(0, search_radius)
-		navigation_agent.target_position = random_point
+		# Generar punto de búsqueda de forma más eficiente
+		var search_angle = randf_range(0, TAU)
+		var search_distance = randf_range(search_radius * 0.5, search_radius)
+		var search_point = last_known_player_position + Vector2.RIGHT.rotated(search_angle) * search_distance
+		
+		# Obtener punto válido más cercano
+		if navigation_region and navigation_region.navigation_polygon:
+			var map = navigation_region.get_navigation_map()
+			var closest_valid_point = NavigationServer2D.map_get_closest_point(map, search_point - navigation_region.global_position)
+			if closest_valid_point != Vector2.ZERO:
+				navigation_agent.target_position = closest_valid_point + navigation_region.global_position
+			else:
+				navigation_agent.target_position = search_point
+		else:
+			navigation_agent.target_position = search_point
+	
 	_update_navigation_velocity(delta)
 
 func _update_navigation_velocity(delta):
@@ -149,6 +197,25 @@ func _set_next_patrol_point():
 		print("[Guardia] NavigationRegion2D o su polígono no están asignados.")
 		return
 
+	# Cachear puntos de patrulla si no se han calculado
+	if not navigation_bounds_cached:
+		_cache_patrol_points()
+		if cached_patrol_points.is_empty():
+			print("[Guardia] No se pudieron cachear puntos de patrulla válidos.")
+			return
+	
+	# Usar puntos pre-calculados en lugar de generación aleatoria
+	if cached_patrol_points.size() > 0:
+		current_patrol_index = (current_patrol_index + 1) % cached_patrol_points.size()
+		var target_point = cached_patrol_points[current_patrol_index]
+		navigation_agent.target_position = target_point + navigation_region.global_position
+	else:
+		print("[Guardia] No hay puntos de patrulla disponibles.")
+
+func _cache_patrol_points():
+	"""Pre-calcula puntos de patrulla válidos para mejorar rendimiento"""
+	cached_patrol_points.clear()
+	
 	var nav_poly = navigation_region.navigation_polygon
 	if nav_poly.get_outline_count() == 0:
 		print("[Guardia] El NavigationPolygon no tiene contornos definidos.")
@@ -166,26 +233,50 @@ func _set_next_patrol_point():
 		for point in nav_poly.get_outline(i):
 			overall_bounds = overall_bounds.expand(point)
 
-	const MAX_ATTEMPTS = 30
-	for i in range(MAX_ATTEMPTS):
+	# Generar puntos de patrulla de forma más eficiente usando una grid
+	var grid_size = 8  # Divisiones por lado para generar puntos candidatos
+	var map = navigation_region.get_navigation_map()
+	
+	for x in range(grid_size):
+		for y in range(grid_size):
+			var progress_x = x / float(grid_size - 1)
+			var progress_y = y / float(grid_size - 1)
+			
+			var candidate_point = Vector2(
+				lerp(overall_bounds.position.x, overall_bounds.end.x, progress_x),
+				lerp(overall_bounds.position.y, overall_bounds.end.y, progress_y)
+			)
+			
+			# Verificar si el punto está dentro del polígono
+			for outline_index in range(nav_poly.get_outline_count()):
+				var polygon_points = nav_poly.get_outline(outline_index)
+				
+				if Geometry2D.is_point_in_polygon(candidate_point, polygon_points):
+					var closest_valid_point = NavigationServer2D.map_get_closest_point(map, candidate_point)
+					
+					if closest_valid_point != Vector2.ZERO:
+						cached_patrol_points.append(closest_valid_point)
+						break
+	
+	# Agregar algunos puntos aleatorios adicionales para variedad
+	for i in range(5):
 		var random_point = Vector2(
 			randf_range(overall_bounds.position.x, overall_bounds.end.x),
 			randf_range(overall_bounds.position.y, overall_bounds.end.y)
 		)
-
+		
 		for outline_index in range(nav_poly.get_outline_count()):
 			var polygon_points = nav_poly.get_outline(outline_index)
 			
 			if Geometry2D.is_point_in_polygon(random_point, polygon_points):
-				var map = navigation_region.get_navigation_map()
 				var closest_valid_point = NavigationServer2D.map_get_closest_point(map, random_point)
-
-				if closest_valid_point == Vector2.ZERO:
-					continue
 				
-				navigation_agent.target_position = closest_valid_point +  navigation_region.global_position #corrige el punto en relación a la posicion de la region de patrulla
-				return
-	print("[Guardia] No se pudo encontrar un punto de patrulla válido después de %d intentos." % MAX_ATTEMPTS)
+				if closest_valid_point != Vector2.ZERO:
+					cached_patrol_points.append(closest_valid_point)
+					break
+	
+	navigation_bounds_cached = true
+	print("[Guardia] Se cachearon %d puntos de patrulla." % cached_patrol_points.size())
 
 func _on_player_detected():
 	print("¡Jugador DETECTADO!")
@@ -211,20 +302,38 @@ func _on_vision_body_exited(body: Node2D):
 			_on_player_lost()
 
 func check_line_of_sight():
+	"""Verifica línea de visión de forma optimizada"""
 	line_of_sight.target_position = to_local(player.global_position)
 	line_of_sight.force_raycast_update()
+	
 	if not line_of_sight.is_colliding():
+		# Jugador visible
+		last_known_player_position = player.global_position
 		if current_state != State.CHASING:
 			_on_player_detected()
-		last_known_player_position = player.global_position
-		set_state(State.CHASING)
 	else:
-		_on_player_lost()
+		# Jugador no visible
+		if current_state == State.CHASING:
+			_on_player_lost()
 
 func set_state(new_state):
 	if new_state == current_state:
 		return
+		
 	current_state = new_state
+	
+	# Resetear timers específicos según el estado
+	match new_state:
+		State.PATROLLING:
+			patrol_wait_timer = 0.0
+		State.CHASING:
+			# No resetear timers específicos, mantener flujo
+			pass
+		State.SEARCHING:
+			# No resetear timers específicos, mantener flujo
+			pass
+	
+	# Actualizar label de debug
 	if state_label:
 		match current_state:
 			State.PATROLLING:
